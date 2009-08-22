@@ -1,0 +1,10 @@
+#!/bin/bash
+#highlight 'svn diff', enhance readibility!
+#if [ -z "$1" ]; then
+# echo "Usage: svndiprev filename"
+# exit 1;
+#else
+# svn diff -r PREV $1 | vim -
+#fi
+#
+svn di -r PREV $@ | levis

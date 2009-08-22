@@ -1,0 +1,26 @@
+#!/bin/sh 
+# Usage: 
+#       1st step: vim sample.sh => :TOhtml => save as sample.sh.html
+#       2nd step: html2wiki sample.sh.html
+#
+# Description about the following 5 sed command lines. 
+# 1st: replace <body bgcolor="#1c1c1c" text="#d0d0d0"> with <div style="background: #1c1c1c; color:#d0d0d0">
+# 2nd: replace </body> with </div>
+# 3rd: because [[:xxx:]] is a wiki-style command, replace it!
+# 4th: for fancy layout
+# 5th: remove useless html lines, eg: <DOCTYPE..>, <html>, <head>, <title>, <meta> ...
+#
+#
+
+ARGUMENT="$1"
+if [ -z "$ARGUMENT" ] ; then
+    echo "Usage: $0 filename"
+    exit 1
+fi
+
+sed -e 's/<body bgcolor="\(.*\)" text="\(.*\)">/<div style="background:\1; color:\2">/;
+        s/<\/body>/<\/div>/;
+        s/\[\[/<nowiki>\[\[<\/nowiki>/g; 
+        s/ <\/span><br>/\&nbsp;<\/span><br>/g
+        1,7d; $d' $1
+

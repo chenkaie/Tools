@@ -1,0 +1,70 @@
+#!/bin/sh -f
+# ----------------------------------------------------------------------------
+# Amarganth Development Environment
+# Copyright (C) 2004, Jeff Hung
+# All rights reserved.
+# ----------------------------------------------------------------------------
+# $Date$
+# $Rev$
+# $Author$
+# ----------------------------------------------------------------------------
+# revid: "@(#) $Id$"
+# ----------------------------------------------------------------------------
+
+__revision=`echo '$Rev$' | cut -d' ' -f2`;
+__rev_date=`echo '$Date$' | cut -d' ' -f2`;
+__pname=`basename $0`;
+
+__usage()
+{
+    local ex=0;
+    if [ $# -gt 0 ]; then
+        ex=$1; shift;
+    fi;
+    echo >&2 "\
+    Usage: $__pname [ <grep-option> ... ] <pattern> [ <path> ... ]
+
+    Examples:
+
+    SHELL> $__pname . -type f -name '*.h' -or -name '*.cpp'
+
+    SHELL> $__pname . -type f \\
+    \`file-type-patterns.sh lang-cpp \\
+    | xargs -n 1 -I \& echo '-or -name &' \\
+    | xargs echo \\
+    | sed -e s/^-or//\` \\
+    ;
+
+    Revision: r${__revision} (${__rev_date})
+    ";
+    if [ $# -gt 0 ]; then
+        echo >&2 "";
+        echo >&2 "Error: $@";
+    fi;
+    exit $ex;
+}
+
+__path='';
+__find_args='';
+while [ $# -gt 0 ]; do
+    __arg="$1"; shift;
+    if [ -z "$__path" ]; then
+        __path="$__arg";
+    else
+        __find_args="$__find_args $__arg";
+    fi;
+done;
+if [ -z "${__path}" ]; then
+    __usage;
+fi;
+if [ -z "$__find_args" ]; then
+    # jeffhung.20060124:
+    # - Useful to follow after -or to maintain find(1) command-line syntax, but
+    #   is redundant actually.
+    __find_args="-mindepth 0";
+fi;
+
+find "$__path" -type d -regex '.*/\.svn' -prune -or $__find_args \
+| grep -v '.*/\.svn$' \
+;
+

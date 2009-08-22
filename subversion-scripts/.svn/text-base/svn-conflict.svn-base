@@ -1,0 +1,5 @@
+#!/bin/sh
+
+SVN=svn
+
+svn st $@ | grep ^C

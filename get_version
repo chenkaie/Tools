@@ -1,0 +1,132 @@
+#!/bin/sh
+
+VERSION="4"
+LAST_MODIFIED_DATE="2008/1/4"
+VER_FILE="version_collection"
+ARMBOOT_FILE="${PRODUCTDIR}/images/$L2BOOT"
+DRIVER_DIR="${PRODUCTDIR}/drivers/lspdrivers"
+APP_CLUSTER_DIR="../../apps/app_cluster"
+SENSOR_DIR="../../apps/app_cluster/media/video/sensor"
+
+echo "\$\$ get_version version $VERSION, last modified date $LAST_MODIFIED_DATE \$\$"
+echo
+
+if [ -z "${PRODUCTDIR}" ]; then
+    echo "Please source environment file first!"
+    exit 1
+fi
+
+# Get armboot version
+echo "#Armboot version" > $VER_FILE
+ARMBOOT_VER=`ident $ARMBOOT_FILE | grep '$Id' | awk '{print $3}' | cut -d "," -f 1`
+echo "Armboot version: $ARMBOOT_VER" >> $VER_FILE
+
+echo >> $VER_FILE
+
+# Get drivers version
+echo "#Drivers version" >> $VER_FILE
+VAUDIO_VER=`ident $DRIVER_DIR/vaudio.o | grep '$Id' | awk '{print $4}'`
+echo "Audio driver version: $VAUDIO_VER" >> $VER_FILE
+VMA_AE_VER=`ident $DRIVER_DIR/vma_ae.o | grep '$Version' | awk '{print $2}'`
+echo "vma_ae driver version: $VMA_AE_VER" >> $VER_FILE
+VMA_BE_VER=`ident $DRIVER_DIR/vma_be.o | grep '$Version' | awk '{print $2}'`
+echo "vma_be driver version: $VMA_BE_VER" >> $VER_FILE
+VMA_ME_VER=`ident $DRIVER_DIR/vma_me.o | grep '$Version' | awk '{print $2}'`
+echo "vma_me driver version: $VMA_ME_VER" >> $VER_FILE
+VMA_VPE_VER=`ident $DRIVER_DIR/vma_vpe.o | grep '$Version' | awk '{print $2}'`
+echo "vma_vpe driver version: $VMA_VPE_VER" >> $VER_FILE
+VPL_EDMC_VER=`ident $DRIVER_DIR/vpl_edmc.o | grep '$Version' | awk '{print $2}'`
+echo "vpl_edmc driver version: $VPL_EDMC_VER" >> $VER_FILE
+VPL_MMRC_VER=`ident $DRIVER_DIR/vpl_mmrc.o | grep '$Version' | awk '{print $2}'`
+echo "vpl_mmrc driver version: $VPL_MMRC_VER" >> $VER_FILE
+
+echo >> $VER_FILE
+
+CMD1="cut -d ( -f 2"
+CMD2="cut -d ) -f 1"
+
+# Get libraries version
+echo "#Libraries version" >> $VER_FILE
+PBENGINE_VER=`grep "MAKEFOURCC" $APP_CLUSTER_DIR/media/pbengine/inc/PBEngine.h | $CMD1 | $CMD2 | sed s/,\ /./g`
+echo "Pbengine library version: $PBENGINE_VER" >> $VER_FILE
+VIDEOCAP_VER=`grep "MAKEFOURCC" $APP_CLUSTER_DIR/media/video/videocap/inc/VideoCap.h | $CMD1 | $CMD2 | sed s/,\ /./g`
+echo "Videocap library version: $VIDEOCAP_VER" >> $VER_FILE
+MP4VENC_VER=`grep "MAKEFOURCC" $APP_CLUSTER_DIR/media/video/mp4venc/inc/Mp4VEnc.h | $CMD1 | $CMD2 | sed s/,\ /./g`
+echo "Mp4VEnc library version: $MP4VENC_VER" >> $VER_FILE
+JPEGENC_VER=`grep "MAKEFOURCC" $APP_CLUSTER_DIR/media/video/jpegenc/inc/JPEGEnc.h | $CMD1 | $CMD2 | sed s/,\ /./g`
+echo "JpegEnc library version: $JPEGENC_VER" >> $VER_FILE
+ISOM_VER=`grep "MAKEFOURCC" $APP_CLUSTER_DIR/media/isom/inc/isom.h | $CMD1 | $CMD2 | sed s/,\ /./g`
+echo "Isom library version: $ISOM_VER" >> $VER_FILE
+IICCTRL_VER=`grep "IICCTRL_VERSION" $APP_CLUSTER_DIR/peripheral/iicctrl/inc/IICCtrl.h | $CMD1 | $CMD2 | sed s/,\ /./g`
+echo "IICCtrl library version: $IICCTRL_VER" >> $VER_FILE
+
+# Get sensor library version
+if [ $SENSORTYPE = "MT9V111" ]; then
+	MT9V111_VER=`grep "MAKEFOURCC" $SENSOR_DIR/mt9v111/inc/MT9V111.h | $CMD1 | $CMD2 | sed s/,\ /./g`
+	echo "MT9V111 version: $MT9V111_VER" >> $VER_FILE
+elif [ $SENSORTYPE = "MT9M111" ]; then
+	MT9M111_VER=`grep "MAKEFOURCC" $SENSOR_DIR/mt9m111/inc/MT9M111.h | $CMD1 | $CMD2 | sed s/,\ /./g`
+	echo "MT9M111 version: $MT9M111_VER" >> $VER_FILE
+elif [ $SENSORTYPE = "SAA7113H" ]; then
+	SAA7113H_VER=`grep "MAKEFOURCC" $SENSOR_DIR/saa7113h/inc/SAA7113H.h | $CMD1 | $CMD2 | sed s/,\ /./g`
+	echo "SAA7113H version: $SAA7113H_VER" >> $VER_FILE
+elif [ $SENSORTYPE = "MTV54K35" ]; then
+	MTV54K35_VER=`grep "MAKEFOURCC" $SENSOR_DIR/mtv54k35/inc/MTV54K35.h | $CMD1 | $CMD2 | sed s/,\ /./g`
+	echo "MTV54K35 version: $MTV54K35_VER" >> $VER_FILE
+elif [ $SENSORTYPE = "VICAM3" ]; then
+	VICAM3_VER=`grep "MAKEFOURCC" $SENSOR_DIR/vicam3/inc/VICAM3.h | $CMD1 | $CMD2 | sed s/,\ /./g`
+	echo "VICAM3 version: $VICAM3_VER" >> $VER_FILE
+elif [ $SENSORTYPE = "PV480" ]; then
+	PV480_VER=`grep "MAKEFOURCC" $SENSOR_DIR/pv480/inc/PV480.h | $CMD1 | $CMD2 | sed s/,\ /./g`
+	echo "PV480 version: $PV480_VER" >> $VER_FILE
+elif [ $SENSORTYPE = "OV7725" ]; then
+	OV7725_VER=`grep "MAKEFOURCC" $SENSOR_DIR/ov7725/inc/OV7725.h | $CMD1 | $CMD2 | sed s/,\ /./g`
+	echo "OV7725 version: $OV7725_VER" >> $VER_FILE
+fi
+
+echo >> $VER_FILE
+
+# Get applications version
+echo "#Applications version" >> $VER_FILE
+echo "Please check BOA's version by yourself!!"
+echo 
+DRM_VER=`grep "MAKEFOURCC" $APP_CLUSTER_DIR/network/drmservice/inc/drmservice.h | $CMD1 | $CMD2 | sed s/,\ /./g`
+echo "DRM version: $DRM_VER" >> $VER_FILE
+DDNSC_VER=`grep "MAKEFOURCC" $APP_CLUSTER_DIR/network/ddnsclient/app/ddnsc/src/ddnsc.h | $CMD1 | $CMD2 | sed s/,/./g`
+echo "DDNSC version: $DDNSC_VER" >> $VER_FILE
+UPNPDD_VER=`grep "MAKEFOURCC" $APP_CLUSTER_DIR/network/upnpdevice/app/upnpdd/src/upnpdd.c | $CMD1 | $CMD2 | sed s/,/./g`
+echo "UPNPDD version: $UPNPDD_VER" >> $VER_FILE
+UPNPIGDCP_VER=`grep "MAKEFOURCC" $APP_CLUSTER_DIR/network/upnpcontrolpoint/app/upnpigdcp/src/upnpigdcp.h | $CMD1 | $CMD2 | sed s/,/./g`
+echo "UPNPIGDCP version: $UPNPIGDCP_VER" >> $VER_FILE
+SVRPSH_VER=`grep "SERVERPUSH_VERSION" $APP_CLUSTER_DIR/network/serverpush/app/serverpush/src/ServerPush.h | awk '{print $4$5$6$7}' | sed s/,/./g`
+echo "SERVER PUSH version: $SVRPSH_VER" >> $VER_FILE
+RTSPSVR_VER=`grep "MAKEFOURCC" $APP_CLUSTER_DIR/network/streamingserver/rtspstreamingserver/inc/rtspstreamingserver.h | awk '{print $4$5$6$7}' | sed s/,/./g`
+echo "RTSP streaming server version: $RTSPSVR_VER" >> $VER_FILE
+LED_VER=`grep "MAKEFOURCC" $APP_CLUSTER_DIR/peripheral/led/app/led/src/led.h | $CMD1 | $CMD2 | sed s/,/./g`
+echo "LED module version: $LED_VER" >> $VER_FILE
+GENERALAPP_VER=`grep "MAKEFOURCC" $APP_CLUSTER_DIR/network/httpclient/app/GeneralApp/src/httpclientapp.h | $CMD1 | $CMD2 | sed s/,/./g`
+echo "GENERALAPP module version: $GENERALAPP_VER" >> $VER_FILE
+if [ -d $APP_CLUSTER_DIR/manager/ptz ]; then
+	PTZMGR_VER=`grep "MAKEFOURCC" $APP_CLUSTER_DIR/manager/ptz/app/ptzmanager/inc/ptzmanager.h | awk '{print $4$5$6$7}' | sed s/,/./g`
+	echo "PTZ manager version: $PTZMGR_VER" >> $VER_FILE
+fi
+
+echo >> $VER_FILE
+
+# Get modules version
+echo "#Modules version" >> $VER_FILE
+VENCMASTER_VER=`grep "VIDEOMASTER_VERSION" $APP_CLUSTER_DIR/media/video/vencmaster/src/venc_masterapp.h | $CMD1 | $CMD2 | sed s/,\ /./g`
+echo "vencmaster version: $VENCMASTER_VER" >> $VER_FILE
+VENCSLAVE_VER=`grep "VIDEOSLAVE_VERSION" $APP_CLUSTER_DIR/media/video/vencslave/src/venc_slaveapp.h | $CMD1 | $CMD2 | sed s/,\ /./g`
+echo "vencslave version: $VENCSLAVE_VER" >> $VER_FILE
+if [ -d $APP_CLUSTER_DIR/peripheral/uartd ]; then
+	UARTD_VER=`grep "MAKEFOURCC" $APP_CLUSTER_DIR/peripheral/uartd/inc/uartd.h | awk '{print $4$5$6$7}' | sed s/,/./g`
+	echo "UARTD version: $UARTD_VER" >> $VER_FILE
+fi
+BOA_VER=`grep "Version " $APP_CLUSTER_DIR/network/boa/src/ReleaseNote.txt | head -1 | sed s/Version//`
+echo "boa version: $BOA_VER" >> $VER_FILE
+HTTPCLIENT_VER=`grep "MAKEFOURCC" $APP_CLUSTER_DIR/network/httpclient/inc/httpclient.h | $CMD1 | $CMD2 | sed s/,\ /./g`
+echo "http client version: $HTTPCLIENT_VER" >> $VER_FILE
+CHRONOS_VER=`grep "Version " $APP_CLUSTER_DIR/manager/chronos/src/main.c | head -1|sed s/Version//|sed s/\*//g|sed s/\ //g`
+echo "chronos version: $CHRONOS_VER" >> $VER_FILE
+echo "Get version complete!"

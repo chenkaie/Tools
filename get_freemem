@@ -1,0 +1,2 @@
+#!/bin/bash                                                                                                                                                             
+free -m | grep - | awk '{print $4}'

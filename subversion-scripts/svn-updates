@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ "$1" = "--log" ] || [ "$1" = "-l" ] ; then
+	svn-log -v -r BASE:HEAD | less 
+	exit
+fi
+svn st $@ -u | grep "*" | less

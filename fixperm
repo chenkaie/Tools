@@ -1,0 +1,45 @@
+#!/bin/sh
+
+friendly_remind () 
+{
+	if [ -d $1 ] ; then
+		pushd $1 > /dev/null
+		list=`wcfind . -type f -perm 644`
+		if [ "$list" != "" ] ; then
+			echo "following files should have exec permission $1"
+			echo $list 
+		fi
+		popd > /dev/null
+	fi
+}
+if [ -n $1 ]; then
+	if [ "$1" = "-v" ]; then
+		verbose="-t"
+	elif [ "$1" = "-s" ]; then
+		svn_exec="0";
+	fi
+fi
+
+
+list=`wcfind . -type f -perm 644 -exec file {} \; | grep executable | sed 's/:.*//'`
+if [ "$list" != "" ] ;then
+	echo "$list" | sed 's/ /\\ /g' | xargs $verbose chmod 755 
+	if [ "$svn_exec" = "0" ]; then
+		echo "$list" | sed 's/ /\\ /g' | xargs svn ps svn:executable true 
+	fi
+fi
+
+list=`wcfind . -type f -perm +0111 -exec file {} \; | grep -v executable | sed 's/:.*//'`
+if [ "$list" != "" ] ; then
+	echo "$list"  | sed 's/ /\\ /g' | xargs $verbose chmod 644 
+fi
+
+ALWAYS_EXEC_DIR="rootfs/usr/bin"
+friendly_remind $ALWAYS_EXEC_DIR
+ALWAYS_EXEC_DIR="rootfs/usr/sbin"
+friendly_remind $ALWAYS_EXEC_DIR
+ALWAYS_EXEC_DIR="rootfs/usr/share/www/cgi-bin/"
+friendly_remind $ALWAYS_EXEC_DIR
+
+
+echo "permission fixing completed."

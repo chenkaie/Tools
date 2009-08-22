@@ -1,0 +1,3 @@
+#!/usr/bin/expect
+spawn sh -c "exec ssh -R 7322:rd1-2:22 chenkaie.no-ip.org -lroot -p2222"
+interact timeout 300 { send "\x00" }

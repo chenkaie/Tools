@@ -1,0 +1,9 @@
+#!/bin/sh
+if [ -z "${PRJROOT}" ]; then
+    echo "Please source environment file first!"
+    exit 1
+fi
+
+cd ${PRODUCTDIR}/release
+rm -rf app_cluster_Build/ flashfs/ rootfs/
+

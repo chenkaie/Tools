@@ -1,0 +1,20 @@
+#/bin/bash
+echo "shit"
+tmpFile=~/Tools/tmp/test_boa.output
+if [ -z "$1" ]; then
+    echo "Usage: BoaStatus ip_address"
+    echo "Example: BoaStatus 172.16.7.29"
+    exit 1;
+fi
+
+trap "exit 1" SIGINT
+nmap $1 -p 80 -P0 --scan-delay 1s -oN $tmpFile >/dev/null
+grep "open" $tmpFile
+
+while [ "$?" != "0" ]
+do
+    echo -e "\e[0;34mBoa is Down\t\e[1;34m"
+    nmap $1 -p 80 -P0 --scan-delay 1s -oN $tmpFile >/dev/null
+    grep "open" $tmpFile
+done
+echo -e "\e[0;31mBoa is Up... GoGoGo\t\e[1;31m"

@@ -1,0 +1,4 @@
+#!/bin/sh 
+
+svn di $@ | levis
+#svn di $@ | vim -

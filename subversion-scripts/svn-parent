@@ -1,0 +1,3 @@
+#!/bin/sh
+
+svn-url | sed -e 's/\/[^\/]*$//'

@@ -1,0 +1,22 @@
+#!/bin/sh
+
+REPOS="$1"
+REV="$2"
+USER="$3"
+PROPNAME="$4"
+ACTION="$5"
+
+if [ "$ACTION" = "M" -a "$PROPNAME" = "svn:log" ];
+then
+    REV_USER=`svnlook author "$REPOS" -r $REV`
+    if [ "$REV_USER" = "$USER" ];
+    then
+        exit 0;
+    else
+        echo "You must be the owner of the revision to be able to change the svn:log property" >&2
+        exit 1
+    fi
+fi
+
+echo "Changing revision properties other than svn:log is prohibited" >&2
+exit 1

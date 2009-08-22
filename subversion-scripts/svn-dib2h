@@ -1,0 +1,3 @@
+#!/bin/sh 
+
+svn di -r BASE:HEAD $@ | levis

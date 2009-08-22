@@ -1,0 +1,40 @@
+#!/usr/bin/perl -w
+use Net::FTP;
+use Env qw(PRODUCTDIR PRODUCTVER LANGUAGE);
+
+$target = shift(@ARGV);
+if (!$target)
+{
+	print "Usage: update_pkg host-ip \n";
+	exit 1;
+}
+
+if (!$PRODUCTDIR)
+{
+	print "Please source environment file first!\n";
+	exit 1;
+}
+
+print "Upload firmware to ", $target, "\n";
+
+$ftp = Net::FTP->new($target, Debug => 1)
+	 or die "Cannot connect to $target: $@";
+$ftp->login("root", "")
+	 or die "Cannot login ", $ftp->message;
+$ftp->binary();
+while (! $ftp->cwd("/mnt/ramdisk/"))
+{
+    $ftp->mkdir("/mnt/ramdisk/", 1);
+}
+$ftp->put("$PRODUCTDIR/release/package/$PRODUCTVER-$LANGUAGE/$PRODUCTVER.flash.rom", "flashall.bin")
+	 or die "put failed ", $ftp->message;
+#$ftp->put("$PRODUCTDIR/images/$PRODUCTVER.flash.pkg")
+#	 or die "put failed ", $ftp->message;
+$ftp->quit;
+
+
+print "Starting to test if Boa is up on '", $target, "'\n";
+print `BoaStatus $target`;
+
+exit 0;
+

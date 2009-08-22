@@ -1,0 +1,3 @@
+#!/bin/sh
+
+svn log -v --stop-on-copy $@ | less

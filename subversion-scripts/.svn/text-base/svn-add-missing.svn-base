@@ -1,0 +1,3 @@
+#!/bin/sh
+
+svn add ` svn-missing | mawk`
