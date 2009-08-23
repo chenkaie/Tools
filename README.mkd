@@ -1,0 +1,11 @@
+ABOUT
+=====
+
+Useful tools to help improving efficiency on Linux
+
+NOTE
+========
+
+* Ignore ".svn" folders:
+
+    add ".svn" in .git/info/exclude
