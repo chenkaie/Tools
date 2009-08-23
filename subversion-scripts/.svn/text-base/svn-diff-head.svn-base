@@ -1,3 +1,0 @@
-#!/bin/sh
-
-svn diff -x -w -r BASE:HEAD | sed -e 's///' | levis

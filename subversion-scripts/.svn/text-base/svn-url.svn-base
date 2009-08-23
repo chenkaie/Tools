@@ -1,3 +1,0 @@
-#!/bin/sh
-
-svn info $1 | grep ^URL | sed -e 's/^.*http/http/'
