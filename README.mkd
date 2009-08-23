@@ -8,4 +8,5 @@ NOTE
 
 * Ignore ".svn" folders:
 
-    add ".svn" in .git/info/exclude
+        add ".svn" in .git/info/exclude
+* Misc
