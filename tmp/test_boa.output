@@ -1,6 +1,6 @@
-# Nmap 4.11 scan initiated Fri Aug 14 14:41:50 2009 as: nmap -p 80 -P0 --scan-delay 1s -oN /home/kent/Tools/tmp/test_boa.output 172.16.7.52 
-Interesting ports on 172.16.7.52:
+# Nmap 4.11 scan initiated Thu Aug 27 20:24:12 2009 as: nmap -p 80 -P0 --scan-delay 1s -oN /home/kent/Tools/tmp/test_boa.output 172.16.7.57 
+Interesting ports on 172.16.7.57:
 PORT   STATE SERVICE
 80/tcp open  http
 
-# Nmap run completed at Fri Aug 14 14:41:51 2009 -- 1 IP address (1 host up) scanned in 1.197 seconds
+# Nmap run completed at Thu Aug 27 20:24:13 2009 -- 1 IP address (1 host up) scanned in 1.197 seconds

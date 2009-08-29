@@ -1,6 +1,6 @@
 #/bin/bash
-echo "shit"
-tmpFile=~/Tools/tmp/test_boa.output
+echo "Boa upup..."
+tmpFile=/tmp/test_boa.output
 if [ -z "$1" ]; then
     echo "Usage: BoaStatus ip_address"
     echo "Example: BoaStatus 172.16.7.29"

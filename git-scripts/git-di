@@ -1,0 +1,3 @@
+#!/bin/sh
+# hidden a/... & b/...
+git diff --no-prefix
