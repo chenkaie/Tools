@@ -4,9 +4,26 @@ ABOUT
 Useful tools to help improving efficiency on Linux
 
 NOTE
-========
+====
 
 * Ignore ".svn" folders:
 
         add ".svn" in .git/info/exclude
-* Misc
+
+Usage
+=====
+
+1. git clone this repos to your $HOME dir
+
+2. Add below to your .bashrc
+
+        export PATH=$HOME/Tools:$HOME/Tools/subversion-scripts:$HOME/Tools/git-scripts:$PATH
+        source ~/.bashrc
+
+AUTHOR
+======
+
+Kent Chen (Kaie) <chenkaie@gmail.com>
+
+* [@chenkaie](http://www.plurk.com/chenkaie) on Plurk 
+* <http://chenkaie.blogspot.com>
