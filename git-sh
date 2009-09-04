@@ -161,7 +161,7 @@ done
 
 # PROMPT =======================================================================
 
-PS1='`_git_headname`!`_git_workdir``_git_dirty`> '
+PS1='(Git)`_git_headname`!`_git_workdir``_git_dirty`> '
 
 ANSI_RESET="\001$(git config --get-color "" "reset")\002"
 
