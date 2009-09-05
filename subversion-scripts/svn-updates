@@ -1,7 +1,18 @@
 #!/bin/sh
+if [ -z "$1" ] ; then
+    echo "Usage: svn-update . 
+       svn-update -l
+       svn-update -d"
+    exit
+fi
 
 if [ "$1" = "--log" ] || [ "$1" = "-l" ] ; then
-	svn-log -v -r BASE:HEAD | less 
+    revision=`svn info | grep "^Revision: " | cut -d " " -f 2`
+	svn-log -v -r `expr $revision + 1`:HEAD | less 
+	exit
+elif [ "$1" = "--diff" ] || [ "$1" = "-d" ] ; then
+    svn diff -r BASE:HEAD | vim -
 	exit
 fi
+
 svn st $@ -u | grep "*" | less

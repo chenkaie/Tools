@@ -1,10 +1,6 @@
 #!/bin/bash
-#highlight 'svn diff', enhance readibility!
-#if [ -z "$1" ]; then
-# echo "Usage: svndiprev filename"
-# exit 1;
-#else
-# svn diff -r PREV $1 | vim -
-#fi
-#
-svn di -r PREV $@ | levis
+
+svn di -r PREV:COMMITTED $@ | levis
+
+# Have the same result if BASE == COMMITTED, we could manually svn up -r[older version] foo.c to make produce this situation!
+# svn di -r PREV:BASE $@ | levis
