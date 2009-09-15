@@ -1,12 +1,17 @@
 #!/bin/sh
 # ascii => 1 : 49
 # ascii => 9 : 57
-# man 1~9 <keyword>
+# man [section:1~9] [keyword]
 
-toASCII=`printf '%d' "'$1"`
-
-if [ "$toASCII" -gt 49 -a $toASCII -lt 57 ]; then
-    vim -c "Man $2 non-new"
+if [ $# == 2 ]; then
+    sectionToASCII=`printf '%d' "'$1"`
+    if [ "$sectionToASCII" -ge 49 -a $sectionToASCII -le 57 ]; then
+        vim -c "Man $1 $2 fromShell"
+    else
+        echo "Wrong Params!"
+    fi
+elif [ $# == 1 ]; then
+    vim -c "Man 99 $1 fromShell"
 else
-    vim -c "Man $1 non-new"
+    echo "Wrong Params!"
 fi
