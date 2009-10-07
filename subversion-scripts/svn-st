@@ -1,3 +1,12 @@
 #!/bin/sh
+# Usage: svn-st [-M|-A]
+
+if [ "$1" = "-M" ] || [ "$1" = "-m" ] ; then
+    svn st | grep ^M | cut -d ' ' -f 7
+	exit
+elif [ "$1" = "-A" ] || [ "$1" = "-a" ] ; then
+    svn st | grep ^A | cut -d ' ' -f 7
+	exit
+fi
 
 svn st $@ | less

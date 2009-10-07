@@ -1,22 +1,18 @@
 #!/bin/sh
 
-REPOS="$1"
-REV="$2"
-USER="$3"
-PROPNAME="$4"
-ACTION="$5"
+REV="$1"
+REPOS="$2"
 
-if [ "$ACTION" = "M" -a "$PROPNAME" = "svn:log" ];
-then
-    REV_USER=`svnlook author "$REPOS" -r $REV`
-    if [ "$REV_USER" = "$USER" ];
-    then
-        exit 0;
-    else
-        echo "You must be the owner of the revision to be able to change the svn:log property" >&2
-        exit 1
-    fi
+if [ "$1" = "-h" ] || [ "$1" = "--h" ] ; then
+    echo "Usage: svn-editlog @REV [Target]" 
+    exit
 fi
 
-echo "Changing revision properties other than svn:log is prohibited" >&2
-exit 1
+if [ -z "$REV" ] ; then
+    revision=`svn info | grep "^Last\ Changed\ Rev: " | cut -d " " -f 4`
+    echo "svn propedit -r $revision --revprop svn:log"
+    svn propedit -r $revision --revprop svn:log
+else
+    echo "svn propedit -r $REV --revprop svn:log $REPOS"
+    svn propedit -r $REV --revprop svn:log $REPOS
+fi
