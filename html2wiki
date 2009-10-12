@@ -4,11 +4,12 @@
 #       2nd step: html2wiki sample.sh.html
 #
 # Description about the following 5 sed command lines. 
-# 1st: replace <body bgcolor="#1c1c1c" text="#d0d0d0"> with <div style="background: #1c1c1c; color:#d0d0d0">
-# 2nd: replace </body> with </div>
-# 3rd: because [[:xxx:]] is a wiki-style command, replace it!
-# 4th: for fancy layout
-# 5th: remove useless html lines, eg: <DOCTYPE..>, <html>, <head>, <title>, <meta> ...
+# 1st: replace <body bgcolor="#1c1c1c" text="#d0d0d0"> with <div style="font-family: Consolas, Monaco, Courier New; background: #1c1c1c; color:#d0d0d0">
+# 2nd: remove <font face="">
+# 3nd: replace </body> with </div>
+# 4rd: because [[:xxx:]] is a wiki-style command, replace it!
+# 5th: for fancy layout
+# 6th: remove useless html lines, eg: <DOCTYPE..>, <html>, <head>, <title>, <meta> ...
 #
 #
 
@@ -18,7 +19,8 @@ if [ -z "$ARGUMENT" ] ; then
     exit 1
 fi
 
-sed -e 's/<body bgcolor="\(.*\)" text="\(.*\)">/<div style="background:\1; color:\2">/;
+sed -e 's/<body bgcolor="\(.*\)" text="\(.*\)">/<div style="font-family: Consolas, Monaco, Courier New; background:\1; color:\2;">/;
+        s/<font face="\(.*\)">//;
         s/<\/body>/<\/div>/;
         s/\[\[/<nowiki>\[\[<\/nowiki>/g; 
         s/ <\/span><br>/\&nbsp;<\/span><br>/g
