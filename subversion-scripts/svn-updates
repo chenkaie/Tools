@@ -11,7 +11,7 @@ if [ "$1" = "--log" ] || [ "$1" = "-l" ] ; then
 	svn-log -v -r `expr $revision + 1`:HEAD | less 
 	exit
 elif [ "$1" = "--diff" ] || [ "$1" = "-d" ] ; then
-    svn-diff -r BASE:HEAD
+    svn-di -r BASE:HEAD
 	exit
 fi
 
