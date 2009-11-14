@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ -z "$1" ] ; then
+    echo "Usage: $0 [src-wc] [dest-wc]"
+    exit
+fi
+
+cp -f --parents `svn ls -R $1` $2
