@@ -124,7 +124,8 @@ if [ ! -x "$arg_program" ]; then
 	msg_exit 1 '<program> is not an executable.';
 fi;
 
-valgrind_cmd=`whereis -bq valgrind`;
+#valgrind_cmd=`whereis -bq valgrind`;
+valgrind_cmd=`which valgrind`;
 if [ -z "$valgrind_cmd" ]; then
 	msg_exit 2 'Missing valgrind.';
 fi;
@@ -139,7 +140,7 @@ valgrind_options="$valgrind_options $opt_val_supp_options";
 if [ "x$opt_val_gen_supp" = 'xyes' ]; then
 	valgrind_options="$valgrind_options --gen-suppressions=yes";
 else
-	valgrind_options="$valgrind_options --logfile=log-$program_name";
+	valgrind_options="$valgrind_options --log-file=log-$program_name";
 fi;
 
 if [ "x$opt_debug_run" = 'xyes' ]; then
@@ -153,7 +154,7 @@ if [ "x$opt_debug_run" = 'xyes' ]; then
 #		gdb -x "$debug_cmd";
 #		rm -f "$debug_cmd";
 ##		gdb -se "$valgrind_cmd" --args $valgrind_options $arg_program $arg_arguments;
-		valgrind_options="--gdb-attach=yes --wait-for-gdb=yes $valgrind_options";
+		valgrind_options="--db-attach=yes --wait-for-gdb=yes $valgrind_options";
 		echo "CMD> $valgrind_cmd $valgrind_options $arg_program $arg_arguments";
 		if [ "x$opt_no_action" != 'xyes' ]; then
 			"$valgrind_cmd" $valgrind_options $arg_program $arg_arguments;
