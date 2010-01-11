@@ -1,0 +1,534 @@
+#!/usr/bin/env perl
+
+=head1 NAME
+
+git-sync - synchronize multiple git repositories
+
+=head1 SYNOPSIS
+
+    git-sync [--verbose] [--dry-run] [--log] [category]
+
+=head1 DESCRIPTION
+
+C<git-sync> is a tool to keep multiple git repositories up-to-date
+with their upstream repositories, and to clone new repositories as
+they are added to the upstream location.
+
+The updating is done in a manner which preserves your local state, and
+I<should> not cause conflicts.  A C<git remote update --prune> is always done;
+if the user has no uncommitted changes, and the merge would be a
+fast-forward, the current branch is C<git pull>ed, and the diffstat is
+printed.  Otherwise, the state of the repository is shown in a concise
+manner.
+
+C<git-sync> also understands C<git-svn> clones, and updates them using
+the same rules, but using C<git svn fetch> and C<git svn rebase>
+instead of C<git remote update> and C<git pull>.
+
+There are three configuration modes:
+
+=over
+
+=item Local
+
+All of the repositories in a local directory (or set of directories)
+are updated as above.  If any of these directories overlap with
+L</Github> or L</Remote> directories, the repositories are only
+updated once.
+
+=item Github
+
+All of a specific user's repositories (or set of users' repositories)
+from Github are cloned into a specified directory.  By default, a
+writable clone via the SSH is attempted; if this fails, C<git-sync>
+falls back to the read-only C<git> protocol.  If a clone already
+exists, it is updated as above.
+
+=item Remote
+
+All of the repositories in a specific directory (or set of
+directories) on a remote (SSH) server are cloned into a specified
+directory.  If a clone already exists, it is updated as above.
+
+C<git-sync> attempts to make use of SSH master connections to speed up
+clone and update attempts; see C<ControlPath> and C<ControlMaster> in
+L<ssh_config>.  A common configuration might be:
+
+    Host githost.example.com
+    ControlMaster auto
+    ControlPath /home/alexmv/.ssh/master-%r@%h:%p
+
+=back
+
+=head1 CONFIGURATION
+
+Configuration is done through C<git config> files (F<~/.gitconfig> and
+the like).  C<sync.I<category>> sections define common synchronization
+categories.  The C<into> key is required; it specifies the local path
+where repositories will be found or placed.
+
+    [sync "a-local-dir"]
+            # All git repositories directly underneath this one will
+            # be updated
+            into = /home/alexmv/hacking
+
+If a C<github> key is provided, all repositories of that user (or
+users) are cloned and updated:
+
+    [sync "a-github-account"]
+            # The "github" key makes this category github-based
+            github = alexmv
+            github = bestpractical
+            # All of alexmv's and bestpractical's repositories will be
+            # cloned and updated under this directory
+            into = /home/alexmv/github
+
+The presence of C<host> and C<path> keys configures a remote directory
+to clone from.  Multiple values for C<path> can be given; alternately,
+if only one path is needed, C<host> can be specified as
+C<hostname:/path>.
+
+    [sync "a-remote-dir"]
+            # The "host" key makes this category remote-server based
+            host = example.com:/git
+            # All repositories under /git will be cloned and updated
+            # under this directory
+            into = /home/alexmv/example.com
+
+The If the path includes a '*', it is treated as a list of remote
+repository paths.  Otherwise, all subdirectories of the path which are
+git repositories are acted on.
+
+Note that local categories can be overlapped with other types; the
+following configuration clones and updates all of alexmv's github
+repositories, and also updates any other repositories it happens to
+find in C</home/alexmv/github>:
+
+    [sync "local"]
+            into = /home/alexmv/github
+    [sync "github"]
+            github = alexmv
+            into = /home/alexmv/github
+
+Remote and Github configurations also support the C<email> key; if set,
+newly-cloned repositories will have C<user.email> set to the given
+value.
+
+=head1 OPTIONS
+
+=over
+
+=item C<--verbose> or C<-v>
+
+Be more verbose about which repositories are skipped, and why.
+
+=item C<--pretend> or C<--dry-run> or C<-n>
+
+Remote repositories are not fetched from; the list of repositories
+that would be synchronized is listed, and their state.  Note that
+network access is still needed to obtain a list of repositories for
+L</Github> and L</Remote> directories.
+
+=item C<--log> or C<-l>
+
+When a repository is ahead or behind its tracking remote (but not
+diverged), show the output of C<git log --oneline --reverse> for the
+list of commits that differ.
+
+=item C<--help> or C<-h>
+
+Shows this documentation.
+
+=back
+
+Other parameters passed on the command line are taken to be categories
+to be synchronized; if no other arguments are given, synchronzies all
+categories.
+
+=cut
+
+use Git;
+use strict;
+use warnings;
+use Term::ANSIColor qw//;
+use Getopt::Long;
+use Pod::Usage;
+use LWP::Simple qw();
+use File::Path qw();
+
+sub colored { (-t STDOUT) ? Term::ANSIColor::colored(@_) : $_[0] }
+
+$SIG{INT} = sub {
+    print colored("\n\nInterrupted!\n", "bold red");
+    exit;
+};
+$SIG{USR1} = 'IGNORE';
+
+my ($verbose, $pretend, $log, $help);
+GetOptions(
+    'verbose|v' => \$verbose,
+    'pretend|dry-run|n' => \$pretend,
+    'log|l' => \$log,
+    'help|h' => \$help,
+) or pod2usage( -verbose => 1 );
+pod2usage( -verbose => 2 ) if $help;
+
+my %sync;
+for (split /\0/, `git config -z --get-regexp ^sync\\\\.`) {
+    next unless /^sync\.(.*?)\.([^\n]*)(?:\n(.*))?/;
+    $sync{$1}{$2} = exists $sync{$1}{$2}
+        ? ref $sync{$1}{$2} ? [@{$sync{$1}{$2}}, $3] : [$sync{$1}{$2}, $3]
+        : $3;
+}
+
+my @categories;
+if (@ARGV) {
+    for my $name (@ARGV) {
+        die qq{Can't find sync named "$name"\n} unless exists $sync{$name};
+        push @categories, $name;
+    }
+} else {
+    @categories = sort {exists $sync{$a}{local} <=> exists $sync{$b}{local} or $a cmp $b} keys %sync;
+}
+
+my %seen;
+my %masters;
+for my $name (@categories) {
+    print colored("Syncing" . (length $name ? " $name" : "")."\n", "bold");
+
+    if (not $sync{$name}{into}) {
+        print colored("  No 'into' set, skipping!\n", "red");
+    } elsif (exists $sync{$name}{host}) {
+        sync_all_remote(%{$sync{$name}});
+    } elsif (exists $sync{$name}{github}) {
+        sync_all_github(%{$sync{$name}});
+    } else {
+        sync_all_local(%{$sync{$name}});
+    }
+    print " "x45,"\n";
+}
+
+stop_masters();
+
+sub sync_all_local {
+    my %config = @_;
+    foreach my $into ( ref $config{into} ? @{$config{into}} : $config{into} ) {
+        unless (-d $into) {
+            print colored("  Directory '$into' does not exist!\n", "bold red");
+            next;
+        }
+        for my $root (grep {-d} <$into/*>) {
+            $root =~ m{/([^/]+)(?:\.git)?$};
+            printf "  %-40s ", $1;
+            next if already($root => 0);
+            update($root, 0);
+        }
+    }
+}
+
+sub sync_all_github {
+    my %config = @_;
+
+    print colored("  Only one value valid for 'into' when 'github' supplied", "red") and return
+        if ref $config{into};
+
+    unless (-d $config{into}) {
+        print colored("  Creating directory '$config{into}'\n", "bold");
+        print colored("  Directory creation failed: $!\n", "bold red") and return
+            unless eval { File::Path::mkpath($config{into}) };
+    }
+
+    my $decoder = get_json_decoder();
+    print colored("  GitHub sync support requires the JSON::Any module\n", "red") and return
+        if not $decoder;
+
+    my @accounts = ref $config{github} ? @{$config{github}} : ($config{github});
+    for my $acct (@accounts) {
+        my $content = LWP::Simple::get("http://github.com/api/v1/json/$acct");
+        print colored("  GET of http://github.com/api/v1/json/$acct failed!\n", "bold red") and next
+            unless defined $content;
+
+        my $data = eval {$decoder->jsonToObj($content)};
+        print colored("  Parsing of GitHub JSON response failed! $@\n", "bold red")."\n$content\n" and next
+            unless defined $data;
+
+        for my $repo (@{$data->{user}{repositories} || []}) {
+            my $reponame = $repo->{name};
+            my $root = "$config{into}/$reponame";
+
+            printf "  %-40s ", $reponame;
+            next if already($root => 1);
+            if (-e $root) {
+                update($root, 1);
+            } else {
+                my $auth = clone($root => "git\@github.com:$acct/$reponame.git" => $config{email});
+                unless ($auth) {
+                    printf "  %-40s ", "...trying again, anonymously";
+                    clone($root => "git://github.com/$acct/$reponame.git" => $config{email});
+                }
+            }
+            #    my @clones = get_github_clone_list($acct, $reponame);
+            #add_new_github_remotes(@clones); 
+
+        }
+    }
+}
+
+
+sub get_github_clone_list {
+    my $user = shift;
+    my $repo = shift;
+    my @owners;
+    my $decoder = get_json_decoder();
+    my $content = LWP::Simple::get("http://github.com/api/v2/json/repos/show/$user/$repo/network");
+    my $data    = eval { $decoder->jsonToObj($content) };
+    print colored( "  Parsing of GitHub JSON response failed! $@\n", "bold red" ) . "\n$content\n" and next
+        unless defined $data;
+    foreach my $record ( @{ $data->{network} } ) {
+        push @owners, $record->{owner} unless $record->{owner} eq $user;
+    }
+    return @owners;
+}
+
+sub sync_all_remote {
+    my %config = @_;
+
+    @config{qw/host path/} = ($1, $2) if $config{host} =~ /^(.*?):(.*)/;
+
+    print colored("  No 'path' set, skipping!\n", "red") and return
+        unless $config{path};
+
+    print colored("  Only one value valid for 'into' when 'host' supplied!\n", "red") and return
+        if ref $config{into};
+
+    unless (-d $config{into}) {
+        print colored("  Creating directory '$config{into}'\n", "bold");
+        print colored("  Directory creation failed: $!\n", "bold red") and return
+            unless eval { File::Path::mkpath($config{into}) };
+    }
+
+    start_master($config{host});
+
+    my @paths = ref $config{path} ? @{$config{path}} : ($config{path});
+    for my $path (@paths) {
+        $path .= '/*' unless $path =~ /\*/;
+        my @list = `ssh $config{host} ls -d $path`;
+        print colored("  Listing returned ".($? >> 8).", skipping!\n", "bold red") and next if $?;
+        for my $repopath (@list) {
+            chomp $repopath;
+            my ($reponame) = $repopath =~ m{(?:^|/)([^/]*?)(?:\.git)?$};
+            my $into = "$config{into}/$reponame";
+
+            printf "  %-40s ", $reponame;
+            next if already($into => 1);
+            if (-e $into) {
+                update($into, 1);
+            } else {
+                `ssh $config{host} [ -e $repopath/config ]`;
+                print $verbose ? colored("[ Not a git repository ]\n", "dark") : "\r" and next
+                    if $?;
+
+                my ($ignore) = `ssh $config{host} git config --bool -f $repopath/config sync.ignore`;
+                chomp $ignore if defined $ignore;
+                print $verbose ? colored("[ sync.ignore set ]\n", "dark") : "\r" and next
+                    if defined $ignore and $ignore eq 'true';
+
+                clone($into => "$config{host}:$repopath", $config{email});
+            }
+        }
+    }
+}
+
+sub start_master {
+    my ($host) = @_;
+    printf colored("  %-40s ", "dark"), "Starting ssh master connection";
+    my $status = `ssh -O check $host 2>&1`;
+    if ( $status =~ /^Master running \(pid=(\d+)\)/) {
+        print colored( "[ Already running (PID $1) ]\n", "dark");
+        return;
+    } elsif ( $status =~ /^No ControlPath/) {
+        print colored( "[ Not configured -- see ControlPath in sshd_config(5) ]\n", "yellow" );
+        return;
+    }
+
+
+    local $SIG{USR1} = sub {
+        die "Failed to set up SSH master connection\n";
+    };
+
+    my $parent = $$;
+    my $pid    = fork;
+    die "Fork failed: $!" unless $pid >= 0;
+    if ( not $pid ) {
+
+        # Start the master
+        system("ssh", "-x", "-M", "-N", $host);
+
+        # Signal the parent when we're done; we're still waiting,
+        # we'll catch this and abort.
+        kill 'USR1', $parent;
+        exit;
+    }
+
+    sleep 1 while (`ssh -O check $host 2>&1` !~ /Master running \(pid=(\d+)\)/);
+    print colored( "[ Started (PID $1) ]\n", "green" );
+    $masters{$host} = $pid;
+}
+
+sub stop_masters {
+    return unless keys %masters;
+
+    print colored("Stopping SSH master connections\n", "dark");
+
+    for my $host (keys %masters) {
+        printf colored("  %-40s ", "dark"), $host;
+        if (kill 0, $masters{$host}) {
+            my $status = `ssh -O exit $host 2>&1`;
+            if ($status =~ /Exit request sent/) {
+                print colored("[ Done ]\n", "green");
+            } else {
+                $status =~ s/\r?\n$//; # chomp doesn't remove the \r
+                print colored("[ $status ]\n", "red");
+            }
+        } else {
+            print colored("[ Already stopped! ]\n", "red");
+        }
+    }
+    print "\n";
+}
+
+sub already {
+    my ($path, $force) = @_;
+    if ($force and $seen{$path}) {
+        print colored( "[ Already synchronized! ]\n", "red");
+        return 1;
+    } elsif (exists $seen{$path}) {
+        print $verbose ? colored("[ Already synchronized ]\n", "dark") : "\r";
+        return 1;
+    }
+    $seen{$path} = $force;
+    return;
+}
+
+sub update {
+    my ($root, $force) = @_;
+
+    # Already exists, fetch and possibly rebase
+    my $repo = eval { Git->repository(Directory => $root) };
+    unless ($repo) {
+        print $force ? colored("[ Not a git repository! ]\n", "bold red") : "\r";
+        return;
+    }
+
+    if ( $repo->config_bool( "sync.ignore" )) {
+        print $verbose ? colored("[ sync.ignore set ]\n", "dark") : "\r";
+        return;
+    }
+
+    my $gitsvn = -e $repo->repo_path . "/svn/.metadata";
+    if ($gitsvn) {
+        print colored( "[ svn ] ", "dark blue" );
+         # git-svn doesn't work with $repo->command, hate
+        `git --git-dir @{[$repo->repo_path]} svn fetch -q` unless $pretend;
+    } else {
+        my $ret = eval { $repo->command( [qw/remote update --prune/], STDERR => 0 ); } unless $pretend;
+    }
+    kill $? & 127, $$ if $? & 127; # Propagate the signal it died with, if any
+
+    my $error = $@; chomp $error;
+    print colored("[ Fetch failed! $error]\n", "bold red") and return if $@;
+
+    print colored("[ Fetch ] ", "dark") if $pretend;
+
+    print colored("[ Bare repository ]\n", "green") and return if $repo->config_bool('core.bare');
+
+    my $status = "";
+    my ($fh, $ctx) = $repo->command_output_pipe('status');
+    $status .= $_ while (<$fh>);
+    eval {$repo->command_close_pipe($fh, $ctx);};
+
+    # Rebase if there are no changes, it is on a tracking
+    # branch, and the result would be a fast-forward
+    my ($branch) = $status =~ /^# On branch (.*)/m;
+    $branch ||= 'Not currently on any branch';
+    if ($status =~ /^nothing (?:added )?to commit/m
+            and $status =~ /^# Your branch is behind '(.*?)' by (\d+) commits?, and can be fast-forwarded/m) {
+        my ($tracking, $behind) = ($1, $2);
+        # git-pull is a shell script, unfortunately, and
+        # thus can't be run via $repo->command( "pull" )
+        chdir($root);
+        print colored( $pretend ?
+                           "[ Would pull $behind commits ($branch) ]\n" :
+                           "[ Pulled $behind commits ($branch) ]\n",
+                       "bold green" );
+
+        print logs($repo, $branch => $tracking);
+
+        my $pull = $pretend ? "" : `git pull --stat`;
+        kill $? & 127, $$ if $? & 127; # Propagate the signal it died with, if any
+
+        # This line will always be present, and is content-free
+        $pull =~ s/^First, rewinding head.*?\n//m;
+        # Indent, and colorize (git doesn't, because we're not a tty)
+        $pull =~ s/^( .*?)(\+*)(-*)$/$1.colored($2,"green").colored($3,"red")/gme;
+        $pull =~ s/^/    /gm if length $pull;
+        print $pull;
+    } else {
+        my $logs = "";
+        if ($status =~ /^# Your branch and '.*?' have diverged.*?(\d+) and (\d+) different commit/sm) {
+            print colored( "[ Diverged by $1 and $2 commits ($branch) ]", "bold cyan" );
+        } elsif ($status =~ /^# Your branch is ahead of '(.*?)' by (\d+) commit/m) {
+            my ($tracking, $ahead) = ($1, $2);
+            print colored( "[ Ahead by $ahead ($branch) ]", "bold blue");
+            $logs = logs($repo, $tracking => $branch);
+        } elsif ($status =~ /^# Your branch is behind '(.*?)' by (\d+) commit/m) {
+            my ($tracking, $behind) = ($1, $2);
+            print colored( "[ Behind by $behind ($branch) ]", "bold magenta");
+            $logs = logs($repo, $branch => $tracking);
+        } else {
+            print colored( "[ Up-to-date ($branch) ]", "green");
+        }
+        if ($status !~ /^nothing (?:added )?to commit/m) {
+            print colored( " [ Dirty ]", "yellow");
+        }
+        print "\n$logs";
+    }
+
+}
+
+sub clone {
+    # Path to clone into, path to clone from, user
+    my ($into, $from, $email) = @_;
+    local $?;
+
+    print colored("[ Would clone $from into $into ]\n", "bold green") and return 1 if $pretend;
+
+    my $ret = eval { Git::command( [clone => "-q" => $from => $into], STDERR => 0 ) };
+    if ($@) {
+        print colored( "[ Clone failed! ]\n", "bold red");
+        print colored( "Error: $@\n", "red") if ($verbose);
+        return undef;
+    }
+    kill $? & 127, $$ if $? & 127; # Propagate the signal it died with, if any
+
+    Git::command( config => "--file", "$into/.git/config", "user.email", $email )
+          if $email;
+    print colored( "[ Cloned! ]\n", "bold green");
+    return 1;
+}
+
+sub logs {
+    my ($repo, $from, $to) = @_;
+    return "" unless $log;
+    my $logmsg = $repo->command( log => "--oneline", "--reverse", "$from..$to" );
+    # Re-colorize and indent
+    $logmsg =~ s/^(\S+)/"    ".colored($1,"yellow")/egm;
+    return $logmsg;
+}
+
+our $JSON_DECODER = undef;
+sub get_json_decoder {
+    $JSON_DECODER ||= eval { require JSON::Any; JSON::Any->import; JSON::Any->new };
+    return $JSON_DECODER;
+
+}
