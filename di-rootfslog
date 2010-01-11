@@ -5,7 +5,7 @@ if [ -z "${PRJROOT}" ]; then
 fi
 
 cd ${PRODUCTDIR}/release/log
-new=`ls -t rootfs*  |sed -n '1p'`
-last=`ls -t rootfs* |sed -n '2p'`
+new=`ls -t *rootfs*  |sed -n '1p'`
+last=`ls -t *rootfs* |sed -n '2p'`
 vimdiff $new $last
 

@@ -15,11 +15,8 @@ if [ -z "$WORK_PATH" ]; then
     WORK_PATH="."
 fi
 
-#for files in `tree -difa $WORK_PATH | grep '~'`
-for files in `tree -ifa $WORK_PATH | grep '~'`
+for files in `tree -difa $WORK_PATH | grep '.svn$'`
 do
     echo "Cleaning" $files " ... "
-    #rm -rf $files
+    rm -rf $files
 done
-
-
