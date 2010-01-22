@@ -28,17 +28,19 @@
 
 WORK_PATH=$1
 CSCOPE_TAG_PATH=$2
-if [ -z "$WORK_PATH" ]; then
-    WORK_PATH="."
-fi
+CSCOPE_PRG=cscope
+CTAGS_PRG=ctags
 
-cd $WORK_PATH
+[ -z "$WORK_PATH" ] && WORK_PATH="" || cd $WORK_PATH
 
 echo "Cscope ... " $WORK_PATH
 # To avoid using wrong cscope(/opt/montavista/pro5.0/bin/cscope) once sourcing devel_IP8161_VVTK
-~/usr/bin/cscope -bqR
+[ -f ~/usr/bin/cscope ] && CSCOPE_PRG="~/usr/bin/cscope"
+$CSCOPE_PRG -bqR
+
 echo "Ctags ... " $WORK_PATH
-#ctags -R --fields=+lS
-~/usr/bin/ctags -R --c-kinds=+p --fields=+ialS --extra=+q
+[ -f ~/usr/bin/ctags ] && CTAGS_PRG="~/usr/bin/ctags"
+#CTAGS_PRG -R --fields=+lS
+$CTAGS_PRG -R --c-kinds=+p --fields=+ialS --extra=+q
 
 [ -n "$CSCOPE_TAG_PATH" ] && cp cscope.* tags $CSCOPE_TAG_PATH
