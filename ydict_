@@ -8,12 +8,6 @@ use strict;
 use warnings;
 use Encode;
 
-# add to resolve "Wide character in print" warning
-#use utf8;
-binmode(STDIN, ':encoding(utf8)');
-binmode(STDOUT, ':encoding(utf8)');
-binmode(STDERR, ':encoding(utf8)');
-
 my $debug = 0;
 my $trigger = 0;
 
