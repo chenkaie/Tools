@@ -1,1 +1,2 @@
+before executing fixperm, "chmod -x foobar.xxx" first
 fixperm -s && svn ci
