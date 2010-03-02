@@ -1,18 +1,22 @@
 #!/bin/sh
 #wcgrep "Venc_MasterApp_SetIrisMode\(HANDLE" | sed -n '1p' | cut -d ":" -f 1
 
-IFS='
-'
+# below IFS is the keypoint
+IFS=$'\t '
+
 result=`wcgrep "$1"`
 
-FILENAME=`echo $result | sed -n "${2}p" | cut -d ":" -f 1`
-LINENUMBER=`echo $result | sed -n "${2}p" | cut -d ":" -f 2`
-	
-$EDITOR $FILENAME +$LINENUMBER
+[ -z "$2" ] && INDEX=1 || INDEX=$2
 
-#if [ -n "$FILENAME" ] && [ -n "$LINENUMBER" ] ; then
-#    echo "$EDITOR $FILENAME +$LINENUMBER"
-#    $EDITOR $FILENAME +$LINENUMBER
-#else
-#    echo "Pattern $1 not found"
-#fi
+if [[ "$INDEX" == "all" ]]; then
+    #FIXME: Why "tr" executed before "cut" in this statement FILENAME=`echo $result | cut -d ":" -f 1 | tr '\n' '@' | sed 's/@/ /g' 
+    FILENAME=`echo $result | cut -d ":" -f 1 | uniq` 
+    FILENAME1=`echo $FILENAME | tr '\n' '@' | sed 's/@/ /g'`
+    echo Edit $INDEX, Filename: $FILENAME1
+    $EDITOR -X -p $FILENAME1
+else
+    FILENAME=`echo $result | sed -n "${INDEX}p" | cut -d ":" -f 1`
+    LINENUMBER=`echo $result | sed -n "${INDEX}p" | cut -d ":" -f 2`
+    $EDITOR $FILENAME +$LINENUMBER
+fi
+	
