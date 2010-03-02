@@ -1,6 +1,5 @@
 #!/bin/bash
 
-#svn di -r PREV:COMMITTED $@ | levis
 svn di --diff-cmd diff -x "-ruN --ignore-all-space" -r PREV:COMMITTED $@ | levis
 
 # Have the same result if BASE == COMMITTED, we could manually svn up -r[older version] foo.c to make produce this situation!
