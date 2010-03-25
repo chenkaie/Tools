@@ -61,4 +61,4 @@ done
 
 find $pathargs -regex ${WCGREP_IGNORE:-'.*/\.git\(/\|$\)\|.*~$\|.*/\.svn\(/\|$\)'} -prune -o \
     -type f -print0 | xargs -r0 ${WCGREP_GREP:-grep} ${WCGREP_GREPARGS:--HnI} \
-    $grepargs "$pattern"
+    $grepargs "$pattern" | nl -n ln | grep -Ii --colour=auto $grepargs "$pattern"
