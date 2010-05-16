@@ -4,5 +4,7 @@ if [ -z "$1" ] ; then
     echo "Usage: $0 [src-wc] [dest-wc]"
     exit
 fi
-
-cp -f --parents `svn ls -R $1` $2
+destDir=`readlink -f $2`
+cd $1
+cp -f --parents `svn ls -R .` ${destDir}
+cd -

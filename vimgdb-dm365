@@ -4,5 +4,4 @@
 #vim -X -c "set gdbprg=/home/vivotek/mv_pro_5.0/montavista/pro/devkit/arm/v5t_le/bin/arm_v5t_le-gdb" -c "call ToggleGDB(\"$1\")"
 
 # My own build : GNU gdb (GDB) 7.0
-vim -X -c "set gdbprg=/home/kent/ArmTools/arm-linux-gdb_dm365-v7" -c "call ToggleGDB(\"$1\")"
-
+/home/kent/usr/bin/vim -X -c "run macros/gdb_mappings.vim" -c "set gdbprg=/home/kent/ArmTools/arm-linux-gdb_dm365-v7" -c "call ToggleGDB(\"$1\")"

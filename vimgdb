@@ -1,3 +1,5 @@
 #!/bin/sh
-vim -X -c "call ToggleGDB(\"$1\")"
+#vim -X -c "call ToggleGDB(\"$1\")"
+/home/kent/usr/bin/vim -X -c "run macros/gdb_mappings.vim" -c "call ToggleGDB(\"$1\")"
+#/home/kent/usr/bin/vim -X -c "run macros/gdb_mappings.vim" -c "set gdbprg=/home/kent/ArmTools/gdb-v7"  -c "call ToggleGDB(\"$1\")"
 

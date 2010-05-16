@@ -45,4 +45,4 @@ if (not $url) {
 }
 
 system ("${svn} log -v --incremental -r${revision} $url");
-system ("${svn} diff -r${prev_revision}:${revision} $url");
+system ("${svn} diff -r${prev_revision}:${revision} $url | /home/kent/usr/bin/colordiff.pl | less");

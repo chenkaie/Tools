@@ -1,8 +1,2 @@
 #!/bin/sh
-
-# montavista arm-linux-gdb : GNU gdb 6.6.50_20070925 (MontaVista 6.6.50-9.0.20.0801914 2008-08-30)
-#vim -X -c "set gdbprg=/home/vivotek/mv_pro_5.0/montavista/pro/devkit/arm/v5t_le/bin/arm_v5t_le-gdb" -c "call ToggleGDB(\"$1\")"
-
-# My own build : GNU gdb (GDB) 7.0
-vim -X -c "set gdbprg=/home/kent/ArmTools/arm-linux-gdb_vivaldi" -c "call ToggleGDB(\"$1\")"
-
+/home/kent/usr/bin/vim -X -c "run macros/gdb_mappings.vim" -c "set gdbprg=/home/kent/ArmTools/arm-linux-gdb_vivaldi" -c "call ToggleGDB(\"$1\")"
