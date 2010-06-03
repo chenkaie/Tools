@@ -1,0 +1,68 @@
+#!/usr/bin/env perl
+# Yen-Ming Lee <leeym@leeym.com>
+# 2010/06/01
+#
+# ----------------------------------------------------------------------------
+# "THE PEARL-TEA-WARE LICENSE", based on "THE BEER-WARE LICENSE":
+# <leeym@leeym.com> wrote this file. As long as you retain this notice you
+# can do whatever you want with this stuff. If we meet some day, and you think
+# this stuff is worth it, you can buy me a pearl tea in return. Yen-Ming Lee
+# ----------------------------------------------------------------------------
+
+use FindBin qw($Script);
+use Term::ANSIColor qw(:constants);
+use LWP::Simple;
+use URI::Escape;
+use strict;
+
+use utf8;
+binmode(STDOUT, ':encoding(utf8)');
+
+my $word = shift;
+die "usage: $Script word\n" if !$word;
+
+my $red   = RED;
+my $bold  = BOLD;
+my $cyan  = CYAN;
+my $reset = RESET;
+my $green = GREEN;
+
+ydict("http://tw.dictionary.yahoo.com/search?p=" . uri_escape($word));
+
+sub ydict
+{
+  my $url = shift;
+
+  #warn "GET $url\n";
+  my $html = get($url);
+  my $i    = 0;
+  $html =~ s{\r}{}g;
+  $html =~ s{\n}{ }g;
+  my @URL = grep { !m{tab} } ($html =~ m{(http[^<]+docid=\d+)}sg);
+  exit if !scalar(@URL);
+
+  print BOLD YELLOW "\nCorrection: $1\n" if $html =~ m{以下為(\w+)在字典};
+  my $pronunciation = $1 if $html =~ m{<div class="pronunciation">(.*?)</div>};
+  $pronunciation =~ s{</?[^>]+>}{}g;
+
+  #print BOLD YELLOW "\nPronunciation: $pronunciation\n" if $pronunciation;
+
+  my $indent = "  ";
+  $html =~ s{.*?(<div class="def clr nobr">)}{\1};              # behead
+  $html =~ s{<div class="ft">.*}{};                             # curtail
+  $html =~ s{<p class="example">}{$indent  $cyan}g;
+  $html =~ s{<p class="interpret">}{ $green}g;
+  $html =~ s{<b>}{$bold}g;
+  $html =~ s{</b>}{$reset$cyan}g;
+  $html =~ s{</p>}{$reset\n}g;
+  $html =~ s{<div class="def clr nobr">}{$reset\n$bold$red}g;
+  $html =~ s{<div class="list">}{$reset\t}g;
+  $html =~ s{<ol>}{$reset\n}g;
+  $html =~ s{<li>}{$indent\*}g;
+  $html =~ s{\\}{}g;                                            # bug?
+  $html =~ s{</?\w+[^>]*>}{}g;                                  # all tags
+
+  print "$html";
+  shift @URL;
+  map { ydict($_) } (@URL);
+}
