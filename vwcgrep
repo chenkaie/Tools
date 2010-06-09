@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # below IFS is the keypoint
 IFS=$'\t '
