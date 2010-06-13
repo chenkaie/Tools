@@ -1,0 +1,3 @@
+#!/bin/sh
+
+svn-deleted | mawk | xargs svn rm 

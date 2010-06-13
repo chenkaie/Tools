@@ -1,0 +1,3 @@
+#!/bin/sh
+
+svn-missing | mawk | xargs svn-ignore

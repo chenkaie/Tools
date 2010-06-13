@@ -1,0 +1,4 @@
+#!/bin/sh
+
+svn-rm-deleted
+svn-add-missing
