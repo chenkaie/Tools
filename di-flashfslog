@@ -1,11 +1,1 @@
-#!/bin/sh
-if [ -z "${PRJROOT}" ]; then
-        echo "Please source environment file first!"
-        exit 1
-fi
-
-cd ${PRODUCTDIR}/release/log
-new=`ls -t *flashfs*  |sed -n '1p'`
-last=`ls -t *flashfs* |sed -n '2p'`
-vimdiff $new $last
-
+di-rootfslog

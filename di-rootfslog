@@ -1,11 +1,35 @@
 #!/bin/sh 
 if [ -z "${PRJROOT}" ]; then
-        echo "Please source environment file first!"
-        exit 1
+    echo "Please source environment file first!"
+    exit 1
 fi
 
 cd ${PRODUCTDIR}/release/log
-new=`ls -t *rootfs*  |sed -n '1p'`
-last=`ls -t *rootfs* |sed -n '2p'`
+
+PATTERN_DATE=""
+PATTERN_MD5=""
+
+case "$0" in
+    *rootfs*)
+        PATTERN_DATE="_rootfs_[^m]"
+        PATTERN_MD5="_rootfs_md5_"
+        ;;
+    *flashfs*)
+        PATTERN_DATE="_flashfs_[^m]"
+        PATTERN_MD5="_flashfs_md5_"
+        ;;
+    *)
+    exit 1
+    ;;
+esac
+
+if [ "$1" = "-d" ] || [ "$1" = "-date" ] ; then
+    new=`ls -t *${PATTERN_DATE}*  |sed -n '1p'`
+    last=`ls -t *${PATTERN_DATE}* |sed -n '2p'`
+elif [ "$1" = "-m" ] || [ "$1" = "-md5" ] || [ -z "$1"]; then
+    new=`ls -t *${PATTERN_MD5}*  |sed -n '1p'`
+    last=`ls -t *${PATTERN_MD5}* |sed -n '2p'`
+fi
+
 vimdiff $new $last
 
