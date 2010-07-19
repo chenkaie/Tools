@@ -37,7 +37,7 @@
 #-i: ignore-case
 #--colour=auto: Surround the matching string with the marker find in GREP_COLOR environment variable (RECMOMMENDED)
 WCGREP_GREPARGS="-HnIi --colour=auto"
-WCGREP_GREP="egrep"
+WCGREP_GREP="grep"
 WCGREP_IGNORE=".*/\.git\(/\|$\)\|.*/tags\|.*/cscope.out\|.*~$\|.*/\.svn.*\(/\|$\)"
 arg_count=$#
 for (( i=1; i <= $arg_count; i++ )); do
