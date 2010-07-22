@@ -23,7 +23,7 @@ case "$0" in
     ;;
 esac
 
-if [ "$1" = "-d" ] || [ "$1" = "-date" ] ; then
+if [ "$1" = "-s" ] || [ "$1" = "-size" ] ; then
     new=`ls -t *${PATTERN_DATE}*  |sed -n '1p'`
     last=`ls -t *${PATTERN_DATE}* |sed -n '2p'`
 elif [ "$1" = "-m" ] || [ "$1" = "-md5" ] || [ -z "$1"]; then
