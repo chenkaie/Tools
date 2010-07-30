@@ -1,5 +1,33 @@
 #!/bin/sh
-#vim -X -c "call ToggleGDB(\"$1\")"
-/home/kent/usr/bin/vim -X -c "run macros/gdb_mappings.vim" -c "call ToggleGDB(\"$1\")"
-#/home/kent/usr/bin/vim -X -c "run macros/gdb_mappings.vim" -c "set gdbprg=/home/kent/ArmTools/gdb-v7"  -c "call ToggleGDB(\"$1\")"
+GDBPRG=""
 
+case "$0" in
+    *vivaldi*)
+        GDBPRG="/home/kent/ArmTools/arm-linux-gdb_vivaldi"
+        ;;
+    *bach*)
+        GDBPRG="/home/kent/ArmTools/arm-linux-gdb_bach"
+        ;;
+    *haydn*)
+        GDBPRG="/home/kent/ArmTools/arm-linux-gdb_haydn"
+        ;;
+    *mozart3*)
+        #GDBPRG="/home/kent/ArmTools/arm-linux-gdb_mozart3-v6.7"
+
+        # My own build : GNU gdb (GDB) 7.1
+        GDBPRG="/home/kent/ArmTools/arm-linux-gdb_mozart3-v7.1"
+        ;;
+    *dm365*)
+        # montavista arm-linux-gdb : GNU gdb 6.6.50_20070925 (MontaVista 6.6.50-9.0.20.0801914 2008-08-30)
+        #vim -X -c "set gdbprg=/home/vivotek/mv_pro_5.0/montavista/pro/devkit/arm/v5t_le/bin/arm_v5t_le-gdb" -c "call ToggleGDB(\"$1\")"
+
+        # My own build : GNU gdb (GDB) 7.0
+        GDBPRG="/home/kent/ArmTools/arm-linux-gdb_dm365-v7"
+        ;;
+    *)
+        # My own build : GNU gdb (GDB) 7.0
+        GDBPRG="/home/kent/usr/bin/gdb"
+    ;;
+esac
+
+/home/kent/usr/bin/vim -X -c "run macros/gdb_mappings.vim" -c "set gdbprg=${GDBPRG}" -c "call ToggleGDB(\"$1\")"

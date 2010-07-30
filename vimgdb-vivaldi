@@ -1,2 +1,1 @@
-#!/bin/sh
-/home/kent/usr/bin/vim -X -c "run macros/gdb_mappings.vim" -c "set gdbprg=/home/kent/ArmTools/arm-linux-gdb_vivaldi" -c "call ToggleGDB(\"$1\")"
+vimgdb
