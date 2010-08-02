@@ -31,6 +31,15 @@ case "$0" in
 	export BUILDROOTDIR=${LSPDIR}/buildroot
 	export PATH="$PATH:${BUILDROOTDIR}/build_arm_nofpu/staging_dir/bin"
 	;;
+	*mozart*)
+	export soc_platform=mozart3
+	export LSPDIR=/opt/Vivotek/lsp/mozart3
+	export BUILDROOTDIR=${LSPDIR}/buildroot
+	export PROJECT=kernel_platform
+	export PRJROOT=${LSPDIR}/${PROJECT}
+	export TOOLSDIR=${BUILDROOTDIR}/build_arm_nofpu/staging_dir/bin
+	export PATH="$PATH:${BUILDROOTDIR}/build_arm_nofpu/staging_dir/bin"
+	;;
     *dm355*)
     export soc_platform=dm355
     export LSPDIR=/opt/Vivotek/lsp/DM355
@@ -49,10 +58,14 @@ case "$0" in
     export PROJECT=kernel_platform
     export PRJROOT=${LSPDIR}/${PROJECT}
     export TOOLSDIR="/opt/montavista/pro5.0/devkit/arm/v5t_le/bin"
-    export TARGET=arm-linux
+    #export TARGET=arm-linux
     export PREFIX=${PRJROOT}/tools
     export TARGET_PREFIX=${PREFIX}/${TARGET}
+	export PRODUCTNAME=DM365
     export PATH="${TOOLSDIR}:${PREFIX}/bin:/opt/montavista/pro5.0/bin:/opt/montavista/common/bin:${PATH}"
+	#export DVSDK="/home/yenchun/project/DM365/dvsdk_2_10_01_18"
+	#export DVSDK="/home/yenchun/project/DM365/dvsdk_2_10_01_19"
+	#export DVSDK="/home/yenchun/project/DM365/dvsdk_3_10_00_12"
     ;;
 	*)
 	exit 1
@@ -61,9 +74,10 @@ esac
 
 echo soc_platform=$soc_platform
 
-export PROJ_ROOT=~/project/Horus/app_cluster
-export BUILD_ROOT=~/work/Horus/${soc_platform}/build
-export ROOTFSDIR=~/work/Horus/${soc_platform}/rootfs
+export PROJ_ROOT=~/Project/Horus/apps/app_cluster
+#export BUILD_ROOT=~/project/${soc_platform}/build
+export BUILD_ROOT=~/tmp/Horus/${soc_platform}/build
+export ROOTFSDIR=~/tmp/Horus/${soc_platform}/rootfs
 
 make soc_platform=$soc_platform BUILD_ROOT=$BUILD_ROOT $@
 
