@@ -1,0 +1,16 @@
+#!/bin/sh
+
+export PATH=$PATH:$HOME/usr/bin
+source $HOME/.bashrc
+
+echo "GIT directories: $GIT_MANAGED_DIRECTORY"
+if [ "$GIT_MANAGED_DIRECTORY" = "" ]; then
+	echo 'Please set $GIT_MANAGED_DIRECTORY first'
+fi
+
+for dir in $GIT_MANAGED_DIRECTORY ; do
+	pushd $dir 2>&1 > /dev/null
+	git add . 
+	echo "[Time Machine] Auto commit" | git commit -a -F -
+	popd 2>&1 > /dev/null
+done
