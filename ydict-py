@@ -96,13 +96,13 @@ def dict(word,pron):
 	p.redirect=0
 	p.pron=pron
 	try:
-        	index1=string.index(data1,"查看全部")
-		index2=string.index(data1,"知識+")
-	except ValueError:
-		try:
 			index1=string.index(data1,"您是不是要查")+len("您是不是要查")
 			index2=string.index(data1,"adbn_BE")
 			p.redirect=1
+	except ValueError:
+		try:
+			index1=string.index(data1,"字典搜尋")
+			index2=string.index(data1,"Online Resources")
 		except ValueError:
 			return yellow+"Not Found!"+org+"\n"
 		
