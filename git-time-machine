@@ -14,3 +14,12 @@ for dir in $GIT_MANAGED_DIRECTORY ; do
 	echo "[Time Machine] Auto commit" | git commit -a -F -
 	popd 2>&1 > /dev/null
 done
+
+# do rsync in midnight ONLY!
+if [ `date -d now +%k` -le 1 ]; then
+    echo "##################################################"
+    echo "##        Remote Replication on RD1-3           ##"
+    echo "##################################################"
+
+    rsync -avHlr --delete --timeout=999 --delete -e "ssh -l kent" $GIT_MANAGED_DIRECTORY rd1-3:TimeMachine
+fi
