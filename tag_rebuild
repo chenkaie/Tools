@@ -43,4 +43,4 @@ echo "Ctags ... " $WORK_PATH
 #CTAGS_PRG -R --fields=+lS
 $CTAGS_PRG -R --c-kinds=+p --fields=+ialS --extra=+q --exclude=*jquery*
 
-[ -n "$CSCOPE_TAG_PATH" ] && cp cscope.* tags $CSCOPE_TAG_PATH
+[ -n "$CSCOPE_TAG_PATH" ] && cp cscope.* tags $CSCOPE_TAG_PATH || echo "Done!"
