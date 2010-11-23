@@ -39,10 +39,11 @@ if (not $url) {
   my @info_lines = `${svn} info`;
   foreach my $info_line (@info_lines) {
     if ($info_line =~ s/^Repository Root: (.*)$/$1/e) {
-      $url = $info_line;
+      # Kent@20101123, apply chomp to remove line ending character.
+      chomp($url = $info_line);
     }
   }
 }
 
 system ("${svn} log -v --incremental -r${revision} $url");
-system ("${svn} diff -r${prev_revision}:${revision} $url | /home/kent/usr/bin/colordiff.pl | less");
+system ("${svn} diff -r${prev_revision}:${revision} ${url} | less");
