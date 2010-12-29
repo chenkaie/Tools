@@ -10,6 +10,7 @@ case "$1" in
     autossh -M 0 -R 7322:rd1-2:22 arnold@tcdevweb.funp.com -p22 -o TCPKeepAlive=no -o ServerAliveInterval=60
         ;;
 	*)
+	echo "Usage : $0 [dd-wrt|totoro|funp]"
 	exit 1
 	;;
 esac
