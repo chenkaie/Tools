@@ -1,0 +1,17 @@
+#!/usr/bin/expect
+
+spawn telnet "-8" "172.16.34.54"
+
+expect "login:"
+send "root\r\n"
+
+# if password is needed
+#expect "Password:"
+#send "1111\r\n"
+
+# Run shm_read command
+send "shm_read 0 0\r\n"
+
+interact timeout 60 { send -null }
+#interact timeout 300 { send "\x00" }
+
