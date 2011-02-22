@@ -55,6 +55,7 @@ if [ "$depth" = "yes" ]; then
     eval find $optspaths $expropts \
     -regex \''.*/\.svn'\' -or -regex \''.*/\.svn/.*'\' \
     -or -regex \''.*/CVS'\' -or -regex \''.*/CVS/.*'\' \
+    -or -regex \''.*/\.git'\' -or -regex \''.*/\.git/.*'\' \
     -or '\(' $exprmain '\)' $print
 else
     eval find $optspaths $expropts '\(' -name .svn -or -name CVS '\)' -prune \
