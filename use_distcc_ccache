@@ -1,0 +1,10 @@
+#!/bin/sh
+# NOTE: source this file to enable ccache & distcc feature
+#
+# kent@ubuntu:scripts (1) >>> ll /usr/local/bin/arm-linux-gcc
+# lrwxrwxrwx 1 root root 15 2011-02-10 15:01 /usr/local/bin/arm-linux-gcc -> /usr/bin/ccache*
+
+export PATH=/home/kent/usr/bin.ln/:$PATH
+#export DISTCC_HOSTS='localhost 172.16.7.167'
+#export CCACHE_PREFIX="distcc"
+
