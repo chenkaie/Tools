@@ -1,0 +1,36 @@
+#!/bin/sh
+# This is a shell script to transform "-C" into "-c" and skip "-g", "-o" 
+# options
+
+GENUINE_INSTALL="/usr/bin/install"
+NEW_ARG="";
+
+SKIP_ON="false";
+SKIPPED="false";
+
+SKIP_OPT="-o -g";
+
+for arg in $@; do 
+	if [ "$arg" = "-C" ]; then
+		arg="-c";
+	fi
+
+	for opt in $SKIP_OPT; do
+		if [ "$arg" = "$opt" ] ; then
+			SKIP_ON="true";
+		fi
+	done
+
+	if [ "$SKIP_ON" = "false" ] ; then
+		NEW_ARG="$NEW_ARG $arg";
+	elif [ "$SKIPPED" = "true" ] ; then
+		SKIP_ON="false";
+		SKIPPED="false";
+	else 
+		SKIPPED="true";
+	fi
+done
+
+#echo $NEW_ARG
+$GENUINE_INSTALL $NEW_ARG
+

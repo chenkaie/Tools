@@ -3,8 +3,51 @@
 #
 # kent@ubuntu:scripts (1) >>> ll /usr/local/bin/arm-linux-gcc
 # lrwxrwxrwx 1 root root 15 2011-02-10 15:01 /usr/local/bin/arm-linux-gcc -> /usr/bin/ccache*
+#
+# (1) ccache tips:
+#       Set CCACHE_DIR to tmpfs/ramdisk to speed up and reduce journaling filesystem i/o times
+#
+# (2) how to tell a directory is tmpfs by dd tool? (speed difference)
+#     +----------------------------------------------------------------------------+
+#     | kent@rd1-2:~ >>> dd if=/dev/zero of=/dev/shm/testfile bs=8k count=128k     |
+#     | 1073741824 bytes (1.1 GB) copied, 1.34261 seconds, 800 MB/s                |
+#     | kent@rd1-2:~ >>> dd if=/dev/zero of=/tmp/testfile bs=8k count=128k         |
+#     | 1073741824 bytes (1.1 GB) copied, 3.07005 seconds, 350 MB/s                |
+#     +----------------------------------------------------------------------------+
+#
+
+##########
+# ccache # 
+##########
+
+# Refrence from "man ccache" -> "SHARING A CACHE"
+export CCACHE_UMASK="002"
 
 export PATH=/home/kent/usr/bin.ln/:$PATH
+export CCACHE_DIR="/dev/shm/.ccache"
+
+if [ -d "${CCACHE_DIR}" ]; then
+    echo "+----------------------------------------------------+"
+    echo "|              Current ccache statistics             |"
+    echo "+----------------------------------------------------+"
+    /home/kent/usr/bin/ccache -s
+else
+    mkdir ${CCACHE_DIR} 
+    chmod 1777 ${CCACHE_DIR}
+
+    echo "+----------------------------------------------------+"
+    echo "|                Initial ccache                      |"
+    echo "+----------------------------------------------------+"
+    /home/kent/usr/bin/ccache --max-size=2G -s
+
+    # Refrence from "man ccache" -> "SHARING A CACHE"
+    find ${CCACHE_DIR} -type d | xargs chmod g+s
+fi
+
+##########
+# distcc # 
+##########
+
 #export DISTCC_HOSTS='localhost 172.16.7.167'
 #export CCACHE_PREFIX="distcc"
 
