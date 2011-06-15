@@ -1,0 +1,51 @@
+#!/bin/sh 
+
+if [ -z "${PRODUCTDIR}" ]; then
+    echo "Please source environment file first!"
+    exit 1
+fi
+
+if [ "$1" = "-h" ] || [ "$1" = "--h" ] || [ "$1" = "--help" ]  ; then
+    echo "Usage: cd ${PRODUCTDIR}; $0 [TEAROFF_FOLDERS]"
+    exit 0
+fi
+
+cd ${PRODUCTDIR}
+BACKUP_FOLDER="${PRODUCTDIR}/_TearoffFromHorus"
+
+TEAROFF_FOLDERS=$@
+if [ -z "$TEAROFF_FOLDERS" ]; then
+	TEAROFF_FOLDERS=`hr ls | awk '{print $1}'`
+fi
+
+echo -e "It's gonna to tear off these folders from Horus: \n[$TEAROFF_FOLDERS]"
+echo -e "All the above folders will be move into $BACKUP_FOLDER temporally!\n"
+
+# A kindly reminding
+WARNING='\033[31;01m'
+NORMAL='\033[0m'
+echo -e "${WARNING}Press y to Continue${NORMAL}"
+read yn
+if [ "$yn" = "y" ] || [ "$yn" = "Y" ] ; then
+	echo "God Bless You..."
+else
+	exit 0
+fi
+
+# Create a backup folder 
+[ -d $BACKUP_FOLDER ] || mkdir $BACKUP_FOLDER
+
+for folder in ${TEAROFF_FOLDERS}
+do
+	WC_HOST=`svn-url ./ | cut -d '/' -f 3`
+	FOLDER_HOST=`svn-url $folder | cut -d '/' -f 3`
+	if [ "$WC_HOST" != "$FOLDER_HOST" ]; then
+		echo "Repository Root is different, can't do svn cp..."	
+	else
+		echo "Tear off" $folder" from Horus ... "
+		mv $folder $BACKUP_FOLDER
+		svn cp $BACKUP_FOLDER/$folder ./ 
+		hr rm $folder
+	fi
+done
+

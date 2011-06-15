@@ -1,0 +1,8 @@
+#!/bin/sh
+
+REVISION_LIST=`svn log --stop-on-copy $@ | grep ^r[0-9] | awk '{print $1}'`
+for i in $REVISION_LIST
+do
+	svn blame -r $i:$i $@ | grep ${i:1}
+done
+
