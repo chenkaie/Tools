@@ -1,14 +1,22 @@
 #!/bin/sh
 
+SVN_REPO_IP="172.16.5.30"
+SVN_REPO_HOSTNAME="rd1-1"
+
+if [ "$1" = "-h" ] || [ "$1" = "--h" ] || [ "$1" = "--help" ]  ; then
+    echo "Usage: svn-relocate2ip [WC-Path] or svn-relocate2hostname [WC-Path]"
+    exit 0
+fi
+
 case "$0" in
     *2ip*)
-        svn switch --relocate `svn-url` `svn-url | sed -e 's/rd1-1/172\.16\.5\.30/'`
+        svn switch --relocate `svn-url $1` `svn-url $1 | sed -e "s/${SVN_REPO_HOSTNAME}/${SVN_REPO_IP}/"`
         ;;
     *2hostname*)
-        svn switch --relocate `svn-url` `svn-url | sed -e 's/172\.16\.5\.30/rd1-1/'`
+        svn switch --relocate `svn-url $1` `svn-url $1 | sed -e "s/${SVN_REPO_IP}/${SVN_REPO_HOSTNAME}/"`
         ;;
     *)
-    echo "Usage: exec \`svn-relocate2ip' or \`svn-relocate2hostname'"
+    echo "Usage: svn-relocate2ip [WC-Path] or svn-relocate2hostname [WC-Path]"
     exit 1
     ;;
 esac

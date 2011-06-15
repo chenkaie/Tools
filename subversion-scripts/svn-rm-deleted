@@ -1,3 +1,7 @@
 #!/bin/sh
 
-svn-deleted | mawk | xargs svn rm 
+IFS="
+"
+for f in `svn-deleted | mawk`; do
+	svn rm "$f"
+done

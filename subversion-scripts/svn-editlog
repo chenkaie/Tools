@@ -3,7 +3,7 @@
 REV="$1"
 REPOS="$2"
 
-if [ "$1" = "-h" ] || [ "$1" = "--h" ] ; then
+if [ "$1" = "-h" ] || [ "$1" = "--h" ] || [ "$1" = "--help" ]  ; then
     echo "Usage: svn-editlog @REV [Target]" 
     exit
 fi
