@@ -46,4 +46,4 @@ if (not $url) {
 }
 
 system ("${svn} log -v --incremental -r${revision} $url");
-system ("${svn} diff -r${prev_revision}:${revision} ${url} | less");
+system ("${svn} diff -r${prev_revision}:${revision} ${url} | vim -c 'set ft=diff' -");

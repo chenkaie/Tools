@@ -1,11 +1,14 @@
 #!/bin/sh
-# Usage: svn-st [-M|-A]
+# Usage: svn-st [-M|-A|-?]
 
 if [ "$1" = "-M" ] || [ "$1" = "-m" ] ; then
     svn st $2 | grep ^M | awk '{print $2}'
 	exit
 elif [ "$1" = "-A" ] || [ "$1" = "-a" ] ; then
     svn st $2 | grep ^A | awk '{print $2}'
+	exit
+elif [ "$1" = "-?" ] ; then
+    svn st $2 | grep ^? | awk '{print $2}'
 	exit
 fi
 
