@@ -1,0 +1,6 @@
+#!/bin/sh 
+
+# old school, geek style..
+#svn di --diff-cmd colordiff.pl -x "--side-by-side -N --ignore-all-space -W $(tput cols)" $@  | less -R 
+
+svn di --diff-cmd svndiff_helper $@  
