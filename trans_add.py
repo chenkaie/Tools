@@ -12,6 +12,9 @@
 #
 # Note to run the script, a Python module 'xlrd' needs to be installed
 # for reading data from Excel files.
+#
+# [2011/01/12 Update]
+#   1. Add existing tag overwritting support
 # 
 
 import sys
@@ -35,9 +38,20 @@ lang_map = {
 
 outfile = 'output.xml'
 sheet_number = 0
+overwritten = False
+added_total = 0
+overwrite_total = 0
 
 def help_msg():
-	print "Usage: trans_add.py [-n sheet number] <Excel file> <input xml> [output xml]"
+	print "Usage: trans_add.py [-w] [-n sheet number] <Excel file> <input xml> [output xml]"
+	print '''
+Arguments:
+   -w           Enable overwritting mode
+   -n <num>     Specify the work sheet number in the EXCEL file (start from 0)
+   <Excel file> The EXCEL file containing translation strings to be merged
+   <input xml>  The XML file (translator.xml) used as the base for merging
+   [output xml] The output XML file name
+'''
 
 def lang_to_idx(lang):
 	return lang_map[lang]
@@ -56,6 +70,8 @@ def get_elements(element):
 def insert_str(dom, lang, tag, string):
 	elements = get_elements(lang)
 	ref_element = None
+	duplicate = False
+	global added_total, overwrite_total
 
 	for element in elements:
 		if element.tagName > tag:
@@ -63,23 +79,51 @@ def insert_str(dom, lang, tag, string):
 			break
 		elif element.tagName == tag:
 			# The tag already exists
-			return
+			if overwritten:
+				duplicate = True
+				ref_element = element
+				break
+			else:
+				return
 		else:
 			pass
 
-	tmp = dom.createElement(tag)
-	text = dom.createTextNode(string)
-	newline = dom.createTextNode(u'\n')
-	tmp.appendChild(text)
-	lang.insertBefore(tmp, ref_element)
-	lang.insertBefore(newline, ref_element)
+	if not duplicate:
+		tmp = dom.createElement(tag)
+		text = dom.createTextNode(string)
+		newline = dom.createTextNode(u'\n')
+		tmp.appendChild(text)
+		lang.insertBefore(tmp, ref_element)
+		lang.insertBefore(newline, ref_element)
+		added_total = added_total + 1
+	else:
+		tmp = ref_element.firstChild;
+		if not tmp:
+			# Create a new text node
+			print "Create a text node for <%s>" % ref_element.tagName
+			tmp = dom.createTextNode(string)
+			ref_element.appendChild(tmp)
+		else:
+			tmp.nodeValue = string
+		overwrite_total = overwrite_total + 1
+		
+
+def check_empty(row):
+	for i in range(9):
+		if i == 2:
+			# We skip the 'note' column
+			continue
+		if row[i].ctype == xlrd.XL_CELL_EMPTY:
+			return True
+
+	return False
 
 ###################
 #      START      #
 ###################
 
 try:
-	opts, args = getopt.getopt(sys.argv[1:], 'n:')
+	opts, args = getopt.getopt(sys.argv[1:], 'wn:')
 except getopt.GetoptError, e:
 	print str(e)
 	help_msg()
@@ -88,6 +132,9 @@ except getopt.GetoptError, e:
 for opt, val in opts:
 	if opt == '-n':
 		sheet_number = int(val)
+	elif opt == '-w':
+		print "Overwritting mode"
+		overwritten = True
 
 if len(args) < 2:
 	help_msg()
@@ -111,9 +158,11 @@ if len(langs) != 9:
 for i in range(1, sheet.nrows):
 	row = sheet.row(i)
 
-	tag = row[0].value
-	if tag == '':
+	if check_empty(row):
+		print "Skip row %d" % i
 		continue
+
+	tag = row[0].value
 	en_str = get_str(row, 'en')
 	de_str = get_str(row, 'de')
 	es_str = get_str(row, 'es')
@@ -138,3 +187,4 @@ out = open(outfile, 'w')
 outxml = dom.toxml('UTF-8')
 out.write(outxml)
 out.close()
+print "Added: %d Overwritten: %d" % (added_total, overwrite_total)

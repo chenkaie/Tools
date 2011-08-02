@@ -38,7 +38,7 @@ else
     echo "+----------------------------------------------------+"
     echo "|                Initial ccache                      |"
     echo "+----------------------------------------------------+"
-    /home/kent/usr/bin/ccache --max-size=2G -s
+    /home/kent/usr/bin/ccache --max-size=3G -s
 
     # Refrence from "man ccache" -> "SHARING A CACHE"
     find ${CCACHE_DIR} -type d | xargs chmod g+s

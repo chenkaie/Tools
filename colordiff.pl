@@ -26,7 +26,7 @@ use Getopt::Long qw(:config pass_through);
 use IPC::Open2;
 
 my $app_name     = 'colordiff';
-my $version      = '1.0.8';
+my $version      = '1.0.9';
 my $author       = 'Dave Ewart';
 my $author_email = 'davee@sungate.co.uk';
 my $app_www      = 'http://colordiff.sourceforge.net/';
@@ -176,7 +176,7 @@ if ($show_banner == 1) {
 my @inputstream;
 
 my $exitcode = 0;
-if ((defined $ARGV[0]) && (-t STDIN)) {
+if ((defined $ARGV[0]) || (-t STDIN)) {
     # More reliable way of pulling in arguments
     my $pid = open2(\*INPUTSTREAM, undef, "diff", @ARGV);
     @inputstream = <INPUTSTREAM>;
