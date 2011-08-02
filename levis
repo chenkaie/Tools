@@ -3,7 +3,7 @@
 # Read stdin if no arguments were given.
 
 if test $# = 0; then
-  vim --cmd 'let no_plugin_maps = 1' -c 'runtime! $VIMRUNTIME/macros/less.vim' -c 'set ft=diff' -
+  vim -R --cmd 'let no_plugin_maps = 1' -c 'runtime! $VIMRUNTIME/macros/less.vim' -c 'set ft=diff' -
 else
-  vim --cmd 'let no_plugin_maps = 1' -c 'runtime! $VIMRUNTIME/macros/less.vim' -c 'set ft=diff' "$@"
+  vim -R --cmd 'let no_plugin_maps = 1' -c 'runtime! $VIMRUNTIME/macros/less.vim' -c 'set ft=diff' "$@"
 fi
