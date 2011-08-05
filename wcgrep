@@ -39,6 +39,12 @@
 WCGREP_GREPARGS="-HnIi --colour=auto"
 WCGREP_GREP="grep"
 WCGREP_IGNORE=".*/\.git\(/\|$\)\|.*/tags\|.*/cscope.out\|.*~$\|.*/\.svn.*\(/\|$\)"
+
+if [ $# -eq 0 ]; then
+	echo "Usage: wcgrep PATTERN"
+	exit 0
+fi
+
 arg_count=$#
 for (( i=1; i <= $arg_count; i++ )); do
     arg="$1"

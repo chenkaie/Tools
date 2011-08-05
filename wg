@@ -1,0 +1,47 @@
+#!/bin/sh
+
+#define by Kent(2008/12/05), add 
+#-i: ignore-case
+#--colour=auto: Surround the matching string with the marker find in GREP_COLOR environment variable (RECMOMMENDED)
+WCGREP_GREPARGS="-HnIi --colour=auto"
+WCGREP_GREP="grep"
+WCGREP_IGNORE=".*/\.git\(/\|$\)\|.*/tags\|.*/cscope.out\|.*~$\|.*/\.svn.*\(/\|$\)"
+
+# below IFS is the keypoint
+IFS=$'\t '
+
+if [ "$#" -eq 0 ]; then
+	echo "Usage: wg PATTERN [INDEX]"
+	echo "       Open [INDEX]-th file by editor: $EDITOR"
+	exit 0
+fi
+
+pattern="$1"
+INDEX=$2
+
+function _wcgrep() 
+{
+	find $pathargs -regex ${WCGREP_IGNORE:-'.*/\.git\(/\|$\)\|.*~$\|.*/\.svn\(/\|$\)'} -prune -o \
+		-type f -print0 | xargs -r0 ${WCGREP_GREP:-grep} ${WCGREP_GREPARGS:--HnI} \
+		$grepargs "$pattern" | nl -n ln | grep -Ii --colour=auto $grepargs "$pattern"
+}
+
+if [ -n "$INDEX" ]; then
+	result=$(_wcgrep)
+
+	if [[ "$INDEX" == "a" ]]; then
+		#FIXME: Why "tr" executed before "cut" in this statement FILENAME=`echo $result | cut -d ":" -f 1 | tr '\n' '@' | sed 's/@/ /g' 
+		FILENAME=`echo $result | awk '{print $2}' | cut -d ":" -f 1 | uniq` 
+		FILENAME1=`echo $FILENAME | tr '\n' '@' | sed 's/@/ /g'`
+		echo Edit $INDEX, Filename: $FILENAME1
+		$EDITOR -X -p $FILENAME1
+	else
+		str=`echo $result | sed -n "${INDEX}p" | awk '{print $2}'`
+		FILENAME=`echo $str | cut -d ":" -f 1`
+		LINENUMBER=`echo $str |  cut -d ":" -f 2`
+		$EDITOR $FILENAME +$LINENUMBER
+	fi
+else
+	_wcgrep
+fi
+
