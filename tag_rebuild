@@ -36,7 +36,7 @@ CTAGS_PRG=ctags
 echo "Cscope ... " $WORK_PATH
 # To avoid using wrong cscope(/opt/montavista/pro5.0/bin/cscope) once sourcing devel_IP8161_VVTK
 [ -f $HOME/usr/bin/cscope ] && CSCOPE_PRG="$HOME/usr/bin/cscope"
-$CSCOPE_PRG -bqR
+$CSCOPE_PRG -bkqR
 
 echo "Ctags ... " $WORK_PATH
 [ -f $HOME/usr/bin/ctags ] && CTAGS_PRG="$HOME/usr/bin/ctags"
