@@ -1,6 +1,46 @@
-#!/bin/bash
+#!/bin/sh
 
-svn di --diff-cmd diff -x "-ruN --ignore-all-space" -r PREV:COMMITTED $@ | levis
+Usage () {
+	echo "Usage: `basename $0` [PATH...]" 
+	exit 1
+}
 
-# Have the same result if BASE == COMMITTED, we could manually svn up -r[older version] foo.c to make produce this situation!
-# svn di -r PREV:BASE $@ | levis
+case "$1" in
+	*-h*)
+		Usage
+		;;
+esac
+
+svn log -r PREV $1 > /dev/null 2>&1
+
+if [ $? -eq 0 ]; then
+	svn di --diff-cmd diff -x "-ruN --ignore-all-space" -r PREV:COMMITTED $1 | levis
+
+	# Have the same result if BASE == COMMITTED, we could manually svn up -r[older version] foo.c to make produce this situation!
+	# svn di -r PREV:BASE $1 | levis
+else
+	# PATH check
+	[ -n $1 ] && [ -e $1 ] || Usage || Usage 
+	svnUrl=`svn-url $1`
+	repoRoot=`svn info $1 2> /dev/null | grep "^Repository Root:" | sed -e "s/^Repository Root: //"`
+
+	IFS=$'\t '
+	svnParentLog=$(svn log -v --stop-on-copy $1 | grep " (from .*)")
+
+	parentURL=${svnUrl/$repoRoot/}
+
+	while [ 1 ]; do
+		fromResult=$(echo $svnParentLog | grep "${parentURL/$tmpBasename/} ")
+		[ $? -eq 0 ] && break || parentURL=${parentURL/$tmpBasename/}
+		parentURLBasename=$(basename $parentURL)
+		tmpBasename="/${parentURLBasename}"
+		targetBasename="$tmpBasename$targetBasename"
+	done
+
+	fromURL=$(echo $fromResult | sed 's/\(.*\)from \(.*\):\(.*\))/\2/')
+	fromRev=$(echo $fromResult | sed 's/\(.*\)from \(.*\):\(.*\))/\3/')
+
+	#echo svn diff ${repoRoot}${fromURL}${targetBasename}@${fromRev} $svnUrl
+	svn di --diff-cmd diff -x "-ruN --ignore-all-space" ${repoRoot}${fromURL}${targetBasename}@${fromRev} $svnUrl | levis
+fi
+
