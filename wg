@@ -3,7 +3,7 @@
 #define by Kent(2008/12/05), add 
 #-i: ignore-case
 #--colour=auto: Surround the matching string with the marker find in GREP_COLOR environment variable (RECMOMMENDED)
-WCGREP_GREPARGS="-HnIi --colour=auto"
+WCGREP_GREPARGS="-HnIi --colour=auto --mmap"
 WCGREP_GREP="grep"
 WCGREP_IGNORE=".*/\.git\(/\|$\)\|.*/tags\|.*/cscope.out\|.*~$\|.*/\.svn.*\(/\|$\)"
 
