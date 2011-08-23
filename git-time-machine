@@ -15,11 +15,13 @@ for dir in $GIT_MANAGED_DIRECTORY ; do
 	popd 2>&1 > /dev/null
 done
 
+exit 0;
+
 # do rsync in midnight ONLY!
 if [ `date -d now +%k` -le 1 ]; then
     echo "##################################################"
     echo "##        Remote Replication on RD1-3           ##"
     echo "##################################################"
 
-    rsync -avHlr --delete --delete -e "ssh -l kent" $GIT_MANAGED_DIRECTORY rd1-3:TimeMachine
+    rsync -avz --delete -e "ssh -l kent" $GIT_MANAGED_DIRECTORY rd1-3:TimeMachine
 fi

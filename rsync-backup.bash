@@ -11,11 +11,11 @@
 echo "##################################################"
 echo "##            sync RD1-2 To iMac                ##"
 echo "##################################################"
-rsync -avHlr --delete --timeout=999 --delete -e "ssh -l kent -p6622" ~/Tools ~/.vim ~/.bashrc ~/.vimrc ~/.screenrc ~/practice chenkaie.no-ip.org:RD1-2
-rsync -avHlr --delete --timeout=999 --delete -e "ssh -l kent -p6622" ~/.vim chenkaie.no-ip.org:
+rsync -avHlr --delete --timeout=999 -e "ssh -l kent -p6622" ~/Tools ~/.vim ~/.bashrc ~/.vimrc ~/.screenrc ~/practice chenkaie.no-ip.org:RD1-2
+rsync -avHlr --delete --timeout=999 -e "ssh -l kent -p6622" ~/.vim chenkaie.no-ip.org:
 
 #To RD1-3
 echo "##################################################"
 echo "##            sync RD1-2 To RD1-3               ##"
 echo "##################################################"
-#rsync -avHlr --delete --timeout=999 --delete -e "ssh -l kent" ~/Tools ~/.vim ~/.bashrc ~/.vimrc ~/practice rd1-3:/
+#rsync -avHlr --delete --timeout=999 -e "ssh -l kent" ~/Tools ~/.vim ~/.bashrc ~/.vimrc ~/practice rd1-3:/
