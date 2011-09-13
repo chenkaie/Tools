@@ -5,4 +5,12 @@
 #
 
 #make $* 2>&1 | colormake.pl `stty size`
-/usr/bin/make $* 2>&1 | colormake-vvtk.pl
+case "$@" in
+	*menuconfig*)
+		make $@
+		;;
+	*)
+		make $@ 2>&1 | colormake-vvtk.pl
+		;;
+esac
+

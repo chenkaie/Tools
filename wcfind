@@ -58,6 +58,6 @@ if [ "$depth" = "yes" ]; then
     -or -regex \''.*/\.git'\' -or -regex \''.*/\.git/.*'\' \
     -or '\(' $exprmain '\)' $print
 else
-    eval find $optspaths $expropts '\(' -name .svn -or -name CVS '\)' -prune \
+    eval find $optspaths $expropts '\(' -name .svn -or -name CVS -or -name .git '\)' -prune \
     -or '\(' $exprmain '\)' $print
 fi
