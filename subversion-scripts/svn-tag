@@ -1,0 +1,30 @@
+#!/bin/sh
+
+if [ $# -lt 2 ] ; then
+	echo "This is svn auto tagger speaking. I will help you to tag your firmware."
+	echo "    svn-tag <source> <target>"
+	exit 1
+fi
+
+if [ -z "${PRJROOT}" ] ; then
+	echo "Please source environment file first!"
+	exit 1
+fi
+
+source=$1
+target=$2
+version=$PRODUCTVER
+
+# check if target is a local directory
+if [ -d $target ]; then
+	# we currently do not handle copy to local directory case
+	echo "$0: target must be a svn remote repo"
+	exit 1
+else
+	echo "tagging $version"
+	svn mkdir $target/$version -m "svn-tag: create tag directory" > /dev/null
+	for dir in `ls $source`; do
+		echo "..$dir"
+		svn cp $source/$dir $target/$version/$dir -m "svn-tag: copying $dir" > /dev/null
+	done
+fi
