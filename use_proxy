@@ -1,0 +1,42 @@
+#!/bin/sh
+# NOTE: source this file to enable AV thing over HTTP proxy feature
+#
+# Don't steal my poor Proxy, you could build yourown proxy server on Win32 by FreeProxy
+
+export PROXY_IP="172.16.2.54"
+export PROXY_PORT="8888"
+
+# For most applications, e.g. wget, curl, lynx 
+export http_proxy=http://$PROXY_IP:$PROXY_PORT/
+
+# For Git operation
+# 1. through http: git config --global http.proxy proxy_addr:proxy_port
+# 2. through ssh: (see the following)
+gitp () 
+( 
+	GIT_PROXY_COMMAND_FILE=~/tmp/.git-proxy-wrapper
+
+    cat >| $GIT_PROXY_COMMAND_FILE <<EOF
+#!/bin/sh
+socat - PROXY:$PROXY_IP:\$1:\$2,proxyport=$PROXY_PORT
+EOF
+
+    chmod +x $GIT_PROXY_COMMAND_FILE;
+
+    GIT_PROXY_COMMAND=$GIT_PROXY_COMMAND_FILE git "$@"
+)
+
+# For svn operation
+# Modify this file ~/.subversion/servers by using 
+# http-proxy-exceptions
+# http-proxy-host
+# http-proxy-port
+
+# For ssh operation
+# Modify this file ~/.ssh/config by using 
+# ProxyCommand + "corkscrew" or "socat"
+
+echo "+----------------------------------------------------+"
+echo "|       Just enjoy AV thing over HTTP Proxy          +"
+echo "+----------------------------------------------------+"
+
