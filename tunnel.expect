@@ -1,3 +1,10 @@
 #!/usr/bin/expect
-spawn sh -c "exec ssh -R 7322:rd1-2:22 chenkaie.no-ip.org -lroot -p2222"
-interact timeout 300 { send "\x00" }
+set count 1;
+while { $count > 0 } {
+	puts "[exec date], Run at $count-th time\n";
+	spawn tunnel.sh dd-wrt
+	interact timeout 300 { send "\x00" }
+	set count [expr $count+1];
+	sleep 5
+}
+
