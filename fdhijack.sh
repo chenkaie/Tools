@@ -15,29 +15,25 @@
 
 if [ "$2" = "" ]; then
 	echo "Usage: $0 PID /path/to/pts"
-	echo "Example: $0 \`pidof configer\` /dev/pts/1"
-	echo "         $0 \`pidof configer\` /dev/null"
+	echo "Example: $0 \`pidof Daemon\` /dev/pts/1"
+	echo "         $0 \`pidof Daemon\` \`tty\`"
 	exit 0
 fi
 
-GDB=""
 SLEEP_DURATION=5
 
 case "$0" in
-    *dm365*)
+	*dm365*)
 		# Finetune SLEEP_DURATION to avoid gdb output "Hangup detected on fd 0, error detected on stdin"
 		SLEEP_DURATION=3
 		GDB="/home/kent/ArmTools/gdb-dm365-v6-montavista"
 
 		#SLEEP_DURATION=8
 		#GDB="/home/kent/ArmTools/gdb-dm365-v7"
-        ;;
-    *)
-        # My own build : GNU gdb (GDB) 7.0
-        GDB="/home/kent/usr/bin/gdb"
-    ;;
+		;;
 esac
 
+GDB=${GDB:-gdb}
 
 if ${GDB} --version > /dev/null 2>&1; then
 	true
@@ -51,30 +47,26 @@ dst=$2
 
 # -f : flushes all open output streams to avoid buffered IO
 if [ "${2}" = "-f" ]; then
-
-( 
-	echo "attach $pid" 
-	echo 'call fflush(0)'
-	echo 'detach' 
-	echo 'quit' 
-	sleep 5
-) | ${GDB} -q -x -
-
+	( 
+		echo "attach $pid" 
+		echo 'call fflush(0)'
+		echo 'detach' 
+		echo 'quit' 
+		sleep 5
+	) | ${GDB} -q -x -
 else 
-
-( 
-	echo "attach $pid" 
-	echo 'call open("'$dst'", 66, 0666)' 
-	#echo 'call dup2($1,0)' # stdin
-	echo 'call dup2($1,1)'  # stdout, $1 derived from previous open() by gdb
-	echo 'call dup2($1,2)'  # stderr
-	echo 'p setvbuf(stdout, 0, 2, 0)' #set _IONBF unbuffered
-	echo 'p setvbuf(stderr, 0, 2, 0)' #set _IONBF unbuffered
-	echo 'call close($1)'
-	echo 'detach'
-	echo 'quit'
-	sleep $SLEEP_DURATION
-) | ${GDB} -q -x -
-
+	( 
+		echo "attach $pid" 
+		echo 'call open("'$dst'", 66, 0666)' 
+		#echo 'call dup2($1,0)' # stdin
+		echo 'call dup2($1,1)'  # stdout, $1 derived from previous open() by gdb
+		echo 'call dup2($1,2)'  # stderr
+		echo 'p setvbuf(stdout, 0, 2, 0)' #set _IONBF unbuffered
+		echo 'p setvbuf(stderr, 0, 2, 0)' #set _IONBF unbuffered
+		echo 'call close($1)'
+		echo 'detach'
+		echo 'quit'
+		sleep $SLEEP_DURATION
+	) | ${GDB} -q -x -
 fi
 
