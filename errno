@@ -1,0 +1,20 @@
+#!/bin/sh
+# Reference: http://github.com/pixelb/scripts/commits/master/scripts/errno
+#
+# Display ENAME corresponding to number
+# or all ENAMEs if no number specified.
+#
+# [Kent] testing by the following to see those difference between cpp and arm-cpp 
+# touch foo.h; cpp -dM foo.h
+# touch foo.h; arm_v5t_le-cpp -dM foo.h
+# 
+# Usage: CPP=arm-linux-cpp errno
+
+
+[ $# -eq 1 ] && re="$1([^0-9]|$)"
+echo "#include <errno.h>" |
+${CPP:-cpp} -dD -CC | #-CC available since GCC 3.3 (2003)
+grep -E "^#define E[^ ]+ $re" |
+sed ':s;s#/\*\([^ ]*\) #/*\1_#;t s;' | column -t | tr _ ' ' | #align
+cut -c1-$(tput cols) #truncate to screen width
+
