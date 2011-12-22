@@ -1,9 +1,8 @@
 #!/bin/sh
-
-#define by Kent(2008/12/05), add 
+#
 #-i: ignore-case
 #--colour=auto: Surround the matching string with the marker find in GREP_COLOR environment variable (RECMOMMENDED)
-WCGREP_GREPARGS="-HnIi --colour=auto --mmap"
+WCGREP_GREPARGS="-HnI --colour=auto --mmap"
 WCGREP_GREP="grep"
 WCGREP_IGNORE=".*/\.git\(/\|$\)\|.*/tags\|.*/cscope.out\|.*~$\|.*/\.svn.*\(/\|$\)"
 
@@ -21,9 +20,26 @@ INDEX=$2
 
 function _wcgrep() 
 {
-	find $pathargs -regex ${WCGREP_IGNORE:-'.*/\.git\(/\|$\)\|.*~$\|.*/\.svn\(/\|$\)'} -prune -o \
-		-type f -print0 | xargs -r0 ${WCGREP_GREP:-grep} ${WCGREP_GREPARGS:--HnI} \
-		$grepargs "$pattern" | nl -n ln | grep -Ii --colour=auto $grepargs "$pattern"
+	case "$0" in
+		*WG*)
+		# [NOTE] Don't ignore case => Lightning fast
+		bGrepExcDir=`$WCGREP_GREP --help | grep "exclude-dir"`
+		if [ -n "$bGrepExcDir" ]; then
+			export GREP_OPTIONS="--exclude-dir=\*/.svn/\* --exclude-dir=\*/.git/\* --exclude=\*~ --exclude=\*.swp"
+		else
+			export GREP_OPTIONS="--exclude=\*~ --exclude=\*.swp"
+		fi
+		${WCGREP_GREP} "$pattern" . -R ${WCGREP_GREPARGS} | nl -n ln | grep -I --colour=auto "$pattern"
+		;;
+
+		*wg*)
+		# [NOTE] ignore case => slower
+		WCGREP_GREPARGS=${WCGREP_GREPARGS}" -i"
+		find $pathargs -regex ${WCGREP_IGNORE:-'.*/\.git\(/\|$\)\|.*~$\|.*/\.svn\(/\|$\)'} -prune -o \
+			-type f -print0 | xargs -r0 ${WCGREP_GREP:-grep} ${WCGREP_GREPARGS:--HnI} \
+			$grepargs "$pattern" | nl -n ln | grep -Ii --colour=auto $grepargs "$pattern"
+		;;
+	esac
 }
 
 if [ -n "$INDEX" ]; then
