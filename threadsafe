@@ -14,7 +14,77 @@
 #
 # TODO: remove false positives like .ctime ->rand ...
 
+THREAD_UNSAFE_LIST="
+asctime
+ctime
+drand48
+ecvt
+encrypt
+erand48
+ether_aton
+ether_ntoa
+fcvt
+fgetgrent
+fgetpwent
+getaliasbyname
+getaliasent
+getdate
+getgrent
+getgrgid
+getgrnam
+getlogin
+gethostbyaddr
+gethostbyname
+gethostbyname2
+getmntent
+getnetgrent
+getpwent
+getpwnam
+getpwuid
+getutent
+getutid
+getutline
+gmtime
+hcreate
+hdestroy
+hsearch
+initstate
+jrand48
+lcong48
+lgamma
+lgammaf
+lgammal
+localtime
+lrand48
+mrand48
+nrand48
+ptsname
+qecvt
+qfcvt
+rand
+random
+readdir
+readdir64
+seed48
+setkey
+setstate
+srand48
+srandom
+#strerror
+strtok
+tmpnam
+ttyname
+"
+
+for i in $THREAD_UNSAFE_LIST; do
+	#statements
+	LANG=C grep $i -F -w -n --color="auto" `find -name '*.c' -o -name '*.h' -o -name '*.cpp'`
+done
+exit 0
+
+# Original method
 apropos "_r" |
 sed -n 's#\(.*\)_r .*#\1#p' |
 uniq | #remove duplicates (from posix section for example)
 LANG=C grep -F -f- -w -n --color="auto" `find -name '*.c' -o -name '*.h' -o -name '*.cpp'`
+
