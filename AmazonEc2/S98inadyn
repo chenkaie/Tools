@@ -1,0 +1,7 @@
+#/bin/sh
+# /etc/rcS.d/S98inadyn
+
+echo 1 >> /tmp/log
+# Run DDNS service by Kent@20110610
+/usr/sbin/inadyn --input_file /etc/inadyn.conf
+echo 2 >> /tmp/log
