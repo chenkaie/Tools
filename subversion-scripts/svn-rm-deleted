@@ -2,6 +2,6 @@
 
 IFS="
 "
-for f in `svn-deleted | mawk`; do
+for f in `svn-deleted | awk '{print $2}' $1`; do
 	svn rm "$f"
 done

@@ -1,3 +1,3 @@
 #!/bin/sh
 
-svn-missing | mawk | xargs rm -f 
+svn-missing | awk '{print $2}' $1 | xargs rm -f 

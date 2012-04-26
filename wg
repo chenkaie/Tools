@@ -25,9 +25,9 @@ function _wcgrep()
 		# [NOTE] Don't ignore case => Lightning fast
 		bGrepExcDir=`$WCGREP_GREP --help | grep "exclude-dir"`
 		if [ -n "$bGrepExcDir" ]; then
-			export GREP_OPTIONS="--exclude-dir=\*/.svn/\* --exclude-dir=\*/.git/\* --exclude=\*~ --exclude=\*.swp"
+			export GREP_OPTIONS="--exclude-dir=\*/.svn/\* --exclude-dir=\*/.git/\* --exclude=\*~ --exclude=\*.swp --exclude=cscope.* --exclude=tags"
 		else
-			export GREP_OPTIONS="--exclude=\*~ --exclude=\*.swp"
+			export GREP_OPTIONS="--exclude=\*~ --exclude=\*.swp --exclude=cscope.* --exclude=tags"
 		fi
 		${WCGREP_GREP} "$pattern" . -R ${WCGREP_GREPARGS} | nl -n ln | grep -I --colour=auto "$pattern"
 		;;

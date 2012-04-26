@@ -1,0 +1,77 @@
+#!/bin/sh
+
+# 0.99 cent 
+
+function detect_tag_repo 
+{
+	echo "Tag repository is not specified, autodetecting..."
+
+	tag_repo=`echo $trunk_repo | sed -e "s:\(.*\)/trunk[/]\?$:\1/tag/$brand:"`
+	# search tag repo path
+	echo "  Searching $tag_repo"
+	svn ls $tag_repo > /dev/null 2>&1
+	if [ "$?" -ne "0" ]; then
+		# tag_repo might not exist, find tags
+		tag_repo=`echo $trunk_repo | sed -e "s:\(.*\)/trunk[/]\?$:\1/tags/$brand:"`
+		echo "  Searching $tag_repo"
+		svn ls $tag_repo > /dev/null 2>&1
+		if [ "$?" -ne "0" ] ; then
+			# unable to guess tag repo path, give up
+			tag_repo=""
+		fi
+	fi
+}
+
+if [ -z "${PRJROOT}" ] ; then
+	echo "Please source environment file first!"
+	exit 1
+fi
+
+tag_repo=$1
+source=`readlink $PRODUCTDIR`
+trunk_repo=`svn-url $source`
+target=$1
+version=$PRODUCTVER
+brand=`echo $PRODUCTVER | awk -F- '{print $2}'`
+
+if [ "$tag_repo" == "" ] ; then
+	detect_tag_repo
+
+	if [ "$tag_repo" == "" ] ; then
+		echo "Unable to detect tag repository path. Please specify manually"
+		exit 1
+	fi
+fi
+
+target=$tag_repo
+
+# - debug code
+echo "\$source: $source"
+echo "\$trunk_repo: $trunk_repo"
+echo "\$tag_repo: $tag_repo"
+echo "\$target: $target"
+echo "\$version: $version"
+echo "\$brand: $brand"
+
+exit;
+
+# check if target is a local directory
+if [ -d $target ]; then
+	# we currently do not handle copy to local directory case
+	echo "$0: target must be a svn remote repo"
+	exit 1
+else
+	echo "tagging $version"
+#	svn mkdir $target/$version -m "svn-tag: create tag directory" > /dev/null
+	echo "svn mkdir $target/$version -m \"svn-tag: create tag directory\" > /dev/null"
+	if [ "$?" -ne "0" ] ; then
+		echo "tag directory exists, give up"
+		exit 1
+	fi
+
+	for dir in `ls $source`; do
+		echo "..$dir"
+#		svn cp $source/$dir $target/$version/$dir -m "svn-tag: copying $dir" > /dev/null
+		echo "svn cp $source/$dir $target/$version/$dir -m \"svn-tag: copying $dir\" > /dev/null"
+	done
+fi
