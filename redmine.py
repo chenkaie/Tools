@@ -1,3 +1,10 @@
+''' 
+ Ref: http://www.redmine.org/projects/redmine/wiki/Rest_api 
+ Redmine exposes some of its data through a REST API. 
+ This API provides access and basic CRUD operations (create, update, delete) for the resources described below. 
+ The API supports both XML and JSON formats.
+'''
+
 import urllib
 import urllib2
 from xml.dom import minidom, getDOMImplementation
@@ -43,11 +50,11 @@ class _Project:
 		self.id = self.root.find('identifier').text
 		self.name = self.root.find('name').text
 		
-		for field in self.root.find('custom_fields'):
-			self.custom[ field.attrib['name'] ] = field.text
+		#for field in self.root.find('custom_fields'):
+			#self.custom[ field.attrib['name'] ] = field.text
 			
-		for tracker in self.root.find('trackers'):
-			self.tracker[ tracker.attrib['name'] ] = tracker.attrib['id']
+		#for tracker in self.root.find('trackers'):
+			#self.tracker[ tracker.attrib['name'] ] = tracker.attrib['id']
 		
 	
 	def newIssue(self, **data ):
@@ -62,6 +69,7 @@ class _Project:
 		 priority_id
 		 tracker_id - can be looked up from name in Project.trackers[name]
 		 assigned_to_id
+		 parent_issue_id
 		
 		Unfortunately, there is no easy way to discover the valid values for most of the _id fields'''
 			
@@ -70,6 +78,29 @@ class _Project:
 		
 		data[ 'project_id' ] = self.number
 		return self.__redmine.newIssueFromDict( data )
+
+	def newSubProject(self, **data ):
+		'''Create a new project for this project from the given pairs.
+		
+		newSubProject(name="sub project name", identifier="this-is-a-must", description="proj description", parent_id="95")
+		
+		Possible keys are:
+		 name
+		 identifier
+		 description
+		 parent_id
+		
+		'''
+			
+		if not 'subject' in data:
+			TypeError('Subject cannot be blank.  Use subject=str')
+		
+		data[ 'parent_id' ] = self.number
+		#print data
+		return self.__redmine.newSubProjectFromDict( data )
+
+	def updateProject(self, **data ):
+		return self.__redmine.updateProjectFromDict( self.id, data )
 		
 	def getIssues(self ):
 		pass
@@ -126,11 +157,11 @@ class _Issue:
 			pass
 		
 		
-		for field in self.root.find('custom_fields'):
-			self.custom[ field.attrib['name'] ] = field.text
+		#for field in self.root.find('custom_fields'):
+			#self.custom[ field.attrib['name'] ] = field.text
 
-		for field in self.root.find('relations'):
-			self.relations[ field.attrib['issue_id'] ] = field.attrib
+		#for field in self.root.find('relations'):
+			#self.relations[ field.attrib['issue_id'] ] = field.attrib
 			
 	def resolve(self):
 		'''Resolve this issue'''
@@ -159,7 +190,7 @@ class Redmine:
 	If neither are defined, then only publicly visible items will be retreived	
 	'''
 	
-	def __init__(self, url, key=None, username=None, password=None, debug=False, readonlytest=False ):
+	def __init__(self, url, key=None, username=None, password=None, debug=True, readonlytest=False ):
 		self.__url = url
 		self.__key = key
 		self.debug = debug
@@ -319,7 +350,19 @@ class Redmine:
 	def getProject(self, projectIdent ):
 		'''returns a project object for the given project name'''
 		return self.Project( self.get('projects/'+projectIdent+'.xml') )
+
+	def newSubProjectFromDict(self, dict ):
+		'''creates a new project using fields from the passed dictionary.  Returns the project number or None if it failed. '''
+		xmlStr = self.dict2XML( 'project', dict )
+		newproject = self.Project( self.post( 'projects.xml', xmlStr ) )
+		return newproject
 		
+	def updateProjectFromDict(self, ID, dict ):
+		'''creates a new project using fields from the passed dictionary.  Returns the project number or None if it failed. '''
+		xmlStr = self.dict2XML( 'project', dict )
+		newproject = self.Project( self.put( 'projects/'+str(ID)+'.xml', xmlStr ) )
+		return newproject
+
 	def getIssue(self, issueID ):
 		'''returns an issue object for the given issue number'''
 		return self.Issue( self.get('issues/'+str(issueID)+'.xml') )
@@ -329,7 +372,7 @@ class Redmine:
 		xmlStr = self.dict2XML( 'issue', dict )
 		newIssue = self.Issue( self.post( 'issues.xml', xmlStr ) )
 		return newIssue
-	
+
 	def updateIssueFromDict(self, ID, dict ):
 		'''updates an issue with the given ID using fields from the passed dictionary'''
 		xmlStr = self.dict2XML( 'issue', dict )
@@ -339,6 +382,11 @@ class Redmine:
 		'''delete an issue with the given ID.  This can't be undone - use carefully!
 		Note that the proper method of finishing an issue is to update it to a closed state.'''
 		self.delete( 'issues/'+str(ID)+'.xml' )
+
+	def deleteProject(self, ID ):
+		'''delete an project with the given ID.  This can't be undone - use carefully!
+		Note that the proper method of finishing an project is to update it to a closed state.'''
+		self.delete( 'projects/'+str(ID)+'.xml' )
 		
 	def closeIssue(self, ID ):
 		'''close an issue by setting the status to self.ISSUE_STATUS_ID_CLOSED'''
