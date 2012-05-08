@@ -31,15 +31,25 @@ def getkey():
 '''
 
 PRJ_MODELNAME = "IP5978-DLNK"
-PRJ_DESC = PRJ_MODELNAME + " project\nPM: xxx\nPL: xxx\nFW: xxx\nDQA: xxx\nHW: xxx\nME: xxx"
+PRJ_DESC = PRJ_MODELNAME + " project, PM: xxx, PL: xxx, FW: xxx, DQA: xxx, HW: xxx, ME: xxx"
 PRJ_HOMEPAGE = "http://rd1-1/rd1wiki/index.php/Team:Division:Project:ProjectLeader:" + PRJ_MODELNAME.split('-')[0]
 PRJ_IDENTIFIER = PRJ_MODELNAME.lower() 
 
 print "+----------------------------------------------------------------------------------------+"
-print "[Redmine Project Robot] " + "\nModel Name  = " + PRJ_MODELNAME  \
-                                 + "\nDescription = " + PRJ_DESC       \
-							     + "\nIdentifier  = " + PRJ_IDENTIFIER \
-							     + "\nHomepage    = " + PRJ_HOMEPAGE
+print "[Redmine VIVOTEK Project Robot] "
+
+print "> Project Info: " + "\n    Model Name  = " + PRJ_MODELNAME  \
+						 + "\n    Description = " + PRJ_DESC       \
+						 + "\n    Identifier  = " + PRJ_IDENTIFIER \
+						 + "\n    Homepage    = " + PRJ_HOMEPAGE
+
+
+print "> Subproject Info:" 
+print "    Name = " + PRJ_MODELNAME + " FW development"    + ", Identifier = " +  PRJ_IDENTIFIER + "-fw"
+print "    Name = " + PRJ_MODELNAME + " HW development"    + ", Identifier = " +  PRJ_IDENTIFIER + "-hw"
+print "    Name = " + PRJ_MODELNAME + " ME development"    + ", Identifier = " +  PRJ_IDENTIFIER + "-me"
+print "    Name = " + PRJ_MODELNAME + " IMAGE development" + ", Identifier = " +  PRJ_IDENTIFIER + "-image"
+
 print "+----------------------------------------------------------------------------------------+"
 print ""
 
@@ -136,4 +146,4 @@ sub_prj_image.newIssue(subject = PRJ_MODELNAME + " IMG algorithm")
 '''
  NOTE
 '''
-print "Please setup each subproject Manager, Developer and Reporter by yourself. Then setup Assignee"
+print "\nNOTE: Please setup each subproject Manager, Developer and Reporter by yourself. Then setup Assignee"
