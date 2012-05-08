@@ -28,22 +28,22 @@ def getkey():
 	return c
 
 
-def help():
-	print "Usage: redmine_prj_gen.py -a APIKEY -m MODELNAME"
-	print "       redmine_prj_gen.py -u USER -p PASS -m MODELNAME"
+def usage():
+	print "Usage: redmine_prj_gen.py -a <APIKEY> <MODELNAME>"
+	print "       redmine_prj_gen.py -u <USER> -p <PASS> <MODELNAME>"
 	print ""
-	print " e.g.  redmine_prj_gen.py -a aff383eedceb4538ce57844fb9ea6a25e84e6940 -m IP5978-DLNK"
-	print "       redmine_prj_gen.py -u vivotek -p vivotek -m IP5978-DLNK"
+	print " e.g.  redmine_prj_gen.py -a aff383eedceb4538ce57844fb9ea6a25e84e6940 IP5978-DLNK"
+	print "       redmine_prj_gen.py -u vivotek -p vivotek IP5978-DLNK"
 
 '''
  START
 '''
 
 try:
-	opts, args = getopt.getopt(sys.argv[1:], 'u:p:a:m:')
+	opts, args = getopt.getopt(sys.argv[1:], 'u:p:a:')
 except getopt.GetoptError, e:
 	print str(e)
-	help()
+	usage()
 	sys.exit(1)
 
 bAPIKey = True
@@ -55,8 +55,12 @@ for opt, val in opts:
 		PASS = val
 	elif opt == '-a':
 		APIKEY = val
-	elif opt == '-m':
-		PRJ_MODELNAME = val
+
+if len(args) < 1:
+	usage()
+	sys.exit(1)
+else:
+	PRJ_MODELNAME = args[0]
 
 '''
  Project Introduction (Modify this part by your need)
