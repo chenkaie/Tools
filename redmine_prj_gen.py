@@ -5,6 +5,7 @@
 #    http://caterpillar.onlyfun.net/Gossip/Python/index.html
 
 import sys, os
+import getopt
 
 sys.path.append(os.getcwd()) # Append "redmine.py" under the same folder
 import redmine
@@ -26,11 +27,41 @@ def getkey():
 		termios.tcsetattr(fd, TERMIOS.TCSAFLUSH, old)
 	return c
 
+
+def help():
+	print "Usage: redmine_prj_gen.py -a APIKEY -m MODELNAME"
+	print "       redmine_prj_gen.py -u USER -p PASS -m MODELNAME"
+	print ""
+	print " e.g.  redmine_prj_gen.py -a aff383eedceb4538ce57844fb9ea6a25e84e6940 -m IP5978-DLNK"
+	print "       redmine_prj_gen.py -u vivotek -p vivotek -m IP5978-DLNK"
+
+'''
+ START
+'''
+
+try:
+	opts, args = getopt.getopt(sys.argv[1:], 'u:p:a:m:')
+except getopt.GetoptError, e:
+	print str(e)
+	help()
+	sys.exit(1)
+
+bAPIKey = True
+for opt, val in opts:
+	if opt == '-u':
+		USER = val
+		bAPIKey = False
+	elif opt == '-p':
+		PASS = val
+	elif opt == '-a':
+		APIKEY = val
+	elif opt == '-m':
+		PRJ_MODELNAME = val
+
 '''
  Project Introduction (Modify this part by your need)
 '''
 
-PRJ_MODELNAME = "IP5978-DLNK"
 PRJ_DESC = PRJ_MODELNAME + " project, PM: xxx, PL: xxx, FW: xxx, DQA: xxx, HW: xxx, ME: xxx"
 PRJ_HOMEPAGE = "http://rd1-1/rd1wiki/index.php/Team:Division:Project:ProjectLeader:" + PRJ_MODELNAME.split('-')[0]
 PRJ_IDENTIFIER = PRJ_MODELNAME.lower() 
@@ -53,39 +84,33 @@ print "    Name = " + PRJ_MODELNAME + " IMAGE development" + ", Identifier = " +
 print "+----------------------------------------------------------------------------------------+"
 print ""
 
-if __name__ == '__main__':
-	print 'Are your sure above information is correct?'
-	print 'Press y to continue, q to quit.'
-	while 1:
-		c = getkey()
-		if c == 'y' or c == 'Y':
-			break
-		elif c == 'q' or c == 'Q':
-			sys.exit(1)
+print 'Are your sure above information is correct?'
+print 'Press y to continue, q to quit.'
+while 1:
+	c = getkey()
+	if c == 'y' or c == 'Y':
+		break
+	elif c == 'q' or c == 'Q':
+		sys.exit(1)
 
 print "Building..."
-
-# For debug
-#sys.exit(1)
 
 '''
  Redmine Connection
 '''
 
-# Auth by "API access key" 
-#demo = redmine.Redmine('http://rd1-1/redmine', key='aff383eedceb4538ce57844fb9ea6a25e84e694f')
-# Auth by "username/password"
-#demo = redmine.Redmine('http://rd1-1/redmine', username='kent.chen', password='11111111')
-demo = redmine.Redmine('http://172.16.7.64/redmine', username='kent', password='kent')
-
+if bAPIKey:
+	print "Auth by 'API access key'"
+	demo = redmine.Redmine('http://rd1-1/redmine', key=APIKEY)
+else:
+	print "Auth by 'username/password'"
+	demo = redmine.Redmine('http://rd1-1/redmine', username=USER, password=PASS)
 
 '''
  Created project under "OBM projects >> OBM 2012 Project"
 '''
 
 # Get the parent Project, e.g. OBM projects: http://rd1-1/redmine/projects/obm-projects
-# parent_prj = demo.getProject('obm-2012-projects').newSubProject(name=PRJ_MODELNAME, identifier=PRJ_IDENTIFIER, description=PRJ_DESC, parent_id=parent_prj.number)
-#obm_prj = demo.getProject('1105-03-ip8362-vvtl')
 obm_prj = demo.getProject('obm-2012-projects')
 
 parent_prj  = obm_prj.newSubProject(name = PRJ_MODELNAME,
