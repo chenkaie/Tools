@@ -1,3 +1,9 @@
 #!/bin/sh 
 
-svn di --diff-cmd diff -x "-ruN --ignore-all-space" $@ | levis
+if [ "$1" = "-v" ] || [ "$1" = "-vi" ] || [ "$1" = "-vim" ]  ; then
+	# Use `vim -p` to open each `'M' Modified stat` file on different tab 
+	IFS=$'\n'
+	vim -X -p `svn st $2 | grep ^M | awk '{print $2}'`
+else
+	svn di --diff-cmd diff -x "-ruN --ignore-all-space" $@ | levis
+fi
