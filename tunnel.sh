@@ -41,8 +41,11 @@ case "$1" in
 	*ptt*)
 	$VIMSSH config_system.xml
         ;;
+	*rdp*)
+	$VIMSSH config_ptzctrl.xml
+        ;;
 	*)
-	echo "Usage : $0 [dd-wrt|totoro|funp|ptt]"
+	echo "Usage : $0 [dd-wrt|totoro|funp|ptt|rdp]"
 	exit 1
 	;;
 esac

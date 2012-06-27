@@ -68,7 +68,7 @@ def ppdict(d):
         print "%s:%s%s," % (repr(k),spacing,repr(d[k]))
     print '}'
 
-if 0: # Show info on startup
+if 1: # Show info on startup
     sys.stderr.write("Python %s\n" % sys.version.split('\n')[0])
     sys.stderr.write("Tab completion on. Available items: %s\n" %
                      sorted(filter(lambda n: not n.startswith('_'), locals())))
