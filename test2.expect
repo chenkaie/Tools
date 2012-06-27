@@ -1,0 +1,10 @@
+#!/usr/bin/expect
+set count 1;
+while { $count > 0 } {
+	puts "[exec date], Run at $count-th time\n";
+	spawn tunnel.sh rdp
+	interact timeout 300 { send "\x00" }
+	set count [expr $count+1];
+	sleep 5
+}
+
