@@ -11,7 +11,8 @@ Usage
 2. Add below to your .bashrc
 
         export PATH=$HOME/Tools:$HOME/Tools/subversion-scripts:$HOME/Tools/git-scripts:$PATH
-        source ~/.bashrc
+        
+3. source ~/.bashrc or Re-login for the change to take effect.
 
 AUTHOR
 ======
