@@ -40,13 +40,16 @@ def usage():
 '''
 
 try:
-	opts, args = getopt.getopt(sys.argv[1:], 'u:p:a:')
+	opts, args = getopt.getopt(sys.argv[1:], 'u:p:a:s:w')
 except getopt.GetoptError, e:
 	print str(e)
 	usage()
 	sys.exit(1)
 
 bAPIKey = True
+bConsole = True
+SubProjectOf='obm-2012-projects'
+IESUX=''
 for opt, val in opts:
 	if opt == '-u':
 		USER = val
@@ -55,6 +58,11 @@ for opt, val in opts:
 		PASS = val
 	elif opt == '-a':
 		APIKEY = val
+	elif opt == '-s':
+		SubProjectOf = val
+	elif opt == '-w':
+		bConsole = val
+		IESUX='\r'
 
 if len(args) < 1:
 	usage()
@@ -68,46 +76,46 @@ else:
 
 PRJ_DESC = PRJ_MODELNAME + " project, PM: xxx, PL: xxx, FW: xxx, DQA: xxx, HW: xxx, ME: xxx"
 PRJ_HOMEPAGE = "http://rd1-1/rd1wiki/index.php/Team:Division:Project:ProjectLeader:" + PRJ_MODELNAME.split('-')[0]
-PRJ_IDENTIFIER = PRJ_MODELNAME.lower() 
+PRJ_IDENTIFIER = PRJ_MODELNAME.lower()
 
-print "+----------------------------------------------------------------------------------------+"
-print "[Redmine VIVOTEK Project Robot] "
+print "+----------------------------------------------------------------------------------------+"+IESUX
+print "[Redmine VIVOTEK Project Robot] "+IESUX
 
-print "> Project Info: " + "\n    Model Name  = " + PRJ_MODELNAME  \
-						 + "\n    Description = " + PRJ_DESC       \
-						 + "\n    Identifier  = " + PRJ_IDENTIFIER \
-						 + "\n    Homepage    = " + PRJ_HOMEPAGE
+print "> Project Info: "+ IESUX + "\n    Model Name  = " + PRJ_MODELNAME  \
+						+ IESUX + "\n    Description = " + PRJ_DESC       \
+						+ IESUX + "\n    Identifier  = " + PRJ_IDENTIFIER \
+						+ IESUX + "\n    Homepage    = " + PRJ_HOMEPAGE + IESUX
 
 
-print "> Subproject Info:" 
-print "    Name = " + PRJ_MODELNAME + " FW development"    + ", Identifier = " +  PRJ_IDENTIFIER + "-fw"
-print "    Name = " + PRJ_MODELNAME + " HW development"    + ", Identifier = " +  PRJ_IDENTIFIER + "-hw"
-print "    Name = " + PRJ_MODELNAME + " ME development"    + ", Identifier = " +  PRJ_IDENTIFIER + "-me"
-print "    Name = " + PRJ_MODELNAME + " IMAGE development" + ", Identifier = " +  PRJ_IDENTIFIER + "-image"
+print "> Subproject Info:"+IESUX
+print "    Name = " + PRJ_MODELNAME + " FW development"    + ", Identifier = " +  PRJ_IDENTIFIER + "-fw"+IESUX
+print "    Name = " + PRJ_MODELNAME + " HW development"    + ", Identifier = " +  PRJ_IDENTIFIER + "-hw"+IESUX
+print "    Name = " + PRJ_MODELNAME + " ME development"    + ", Identifier = " +  PRJ_IDENTIFIER + "-me"+IESUX
+print "    Name = " + PRJ_MODELNAME + " IMAGE development" + ", Identifier = " +  PRJ_IDENTIFIER + "-image"+IESUX
 
-print "+----------------------------------------------------------------------------------------+"
-print ""
+print "+----------------------------------------------------------------------------------------+"+IESUX
+print ""+IESUX
 
-print 'Are your sure above information is correct?'
-print 'Press y to continue, q to quit.'
-while 1:
-	c = getkey()
-	if c == 'y' or c == 'Y':
-		break
-	elif c == 'q' or c == 'Q':
-		sys.exit(1)
 
-print "Building..."
+if bConsole:
+	print 'Are your sure above information is correct?'
+	print 'Press y to continue, q to quit.'
+	while 1:
+		c = getkey()
+		if c == 'y' or c == 'Y':
+			break
+		elif c == 'q' or c == 'Q':
+			sys.exit(1)
 
 '''
  Redmine Connection
 '''
 
 if bAPIKey:
-	print "Auth by 'API access key'"
+	print "Auth by 'API access key'"+IESUX
 	demo = redmine.Redmine('http://rd1-1/redmine', key=APIKEY)
 else:
-	print "Auth by 'username/password'"
+	print "Auth by 'username/password'"+IESUX
 	demo = redmine.Redmine('http://rd1-1/redmine', username=USER, password=PASS)
 
 '''
@@ -115,17 +123,25 @@ else:
 '''
 
 # Get the parent Project, e.g. OBM projects: http://rd1-1/redmine/projects/obm-projects
-obm_prj = demo.getProject('obm-2012-projects')
+obm_prj = demo.getProject(SubProjectOf)
 
-parent_prj  = obm_prj.newSubProject(name = PRJ_MODELNAME,
-									identifier  = PRJ_IDENTIFIER,
-									description = PRJ_DESC,
-									#parent_id  = obm_prj.number,
-									homepage    = PRJ_HOMEPAGE)
+try:
+	parent_prj  = obm_prj.newSubProject(name = PRJ_MODELNAME,
+										identifier  = PRJ_IDENTIFIER,
+										description = PRJ_DESC,
+										#parent_id  = obm_prj.number,
+										homepage    = PRJ_HOMEPAGE)
+except:
+	print IESUX+"Create project failed! Show me your credit card :(\n"+IESUX
+	sys.exit(1)
+
 
 '''
  Create 4 subprojects
 '''
+
+print "Building..."+IESUX
+
 # OBM projects >> OBM 2012 Project
 # Note that, "description" is a MUST
 sub_prj_fw    = parent_prj.newSubProject(name = PRJ_MODELNAME + " FW development"    , description = "TBD" , identifier = PRJ_IDENTIFIER + "-fw")
@@ -175,4 +191,5 @@ sub_prj_image.newIssue(subject = PRJ_MODELNAME + " IMG algorithm")
 '''
  NOTE
 '''
-print "\nNOTE: Please setup each subproject Manager, Developer and Reporter by yourself. Then setup Assignee"
+print IESUX+"\nNOTE: Please setup each subproject Manager, Developer and Reporter by yourself. Then setup Assignee"+IESUX
+
