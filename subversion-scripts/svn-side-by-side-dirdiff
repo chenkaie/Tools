@@ -9,8 +9,11 @@ if [ $# -lt 1 ]; then
     exit;
 fi
 
-cur_revision="r"${1/r/}
-pre_revision="r"$((${1/r/}-1))
+echo $1 | grep "\-r" > /dev/null
+[ "$?" -eq 0 ] && r_dashr="-r" || r_dashr="r"
+
+cur_revision="r"${1/${r_dashr}/}
+pre_revision="r"$((${1/${r_dashr}/}-1))
 
 # Using tmpfs for high performance I/O
 [ -d "/dev/shm" ] && tmpdir="/dev/shm" || tmpdir="/tmp" 
