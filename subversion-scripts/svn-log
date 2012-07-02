@@ -1,9 +1,3 @@
 #!/bin/sh
 
-if [ "$1" = "-r" ] || [ "$1" = "-m" ] ; then
-	# Show log of remote repository rather than working copy to avoid
-	# retrieving outdated log if user forget to `svn update` to HEAD 
-	svn log -v --stop-on-copy "`svn-url $2`" | less --tabs=4
-else
-	svn log -v --stop-on-copy $@ | less --tabs=4
-fi
+svn log -v --stop-on-copy $@ | less --tabs=4
