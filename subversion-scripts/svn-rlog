@@ -2,5 +2,4 @@
 # Show log of remote repository rather than working copy to avoid
 # retrieving outdated log if user forget to `svn update` to HEAD 
 
-repo_root=`svn info 2> /dev/null | grep "^Repository Root:" | sed -e "s/^Repository Root: //"`
-svn log -v --stop-on-copy $repo_root $@ | less --tabs=4
+svn log -v --stop-on-copy `svn-url $1` | less --tabs=4
