@@ -1,13 +1,15 @@
 #!/bin/sh
 
+TMPDIR=/dev/shm
+
 # .bashrc
-\cp -rf `readlink -f /home/kent/.bashrc` /tmp/.bashrc_kent
-sed -i -e 's/$HOME/\/home\/kent/g' /tmp/.bashrc_kent
-#sed -i -e 's/PS1=\(.*\)/PS1=[\\u@\\h \\W]\\$/g' /tmp/.bashrc_kent
-source /tmp/.bashrc_kent
+\cp -rf `readlink -f /home/kent/.bashrc` $TMPDIR/.bashrc_kent
+sed -i -e 's/$HOME/\/home\/kent/g' $TMPDIR/.bashrc_kent
+#sed -i -e 's/PS1=\(.*\)/PS1=[\\u@\\h \\W]\\$/g' $TMPDIR/.bashrc_kent
+source $TMPDIR/.bashrc_kent
 
 # .vimrc
-\cp -rf `readlink -f /home/kent/.vimrc` /tmp/.vimrc_kent
-sed -i -e '/backup/d' /tmp/.vimrc_kent
-alias vim='vim -u /tmp/.vimrc_kent'
+\cp -rf `readlink -f /home/kent/.vimrc` $TMPDIR/.vimrc_kent
+sed -i -e '/backup/d' $TMPDIR/.vimrc_kent
+alias vim='vim --cmd "set rtp+=~kent/.vim,~kent/.vim/vundle/" -u '$TMPDIR'/.vimrc_kent'
 
