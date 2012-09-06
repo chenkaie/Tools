@@ -2,18 +2,68 @@
 # TortoiseSVN killer...
 # Use "svn cat" to retreve related files, then employ dirdiff as diff utility.
 
+get_svn_log()
+{
+	SVN_LOG=`svn log -q 2> /dev/null| grep "^r" | cut -d ' ' -f 1 | head -n $1`
+}
+
+get_caret_range()
+{
+	CARET=`echo -n ${1#HEAD} | wc -m`
+
+	get_svn_log $((CARET + 1))
+
+	IFS=''
+	cur_revision=`echo $SVN_LOG | head -1`
+	pre_revision=`echo $SVN_LOG | tail -1`
+	unset IFS
+}
+
+get_num_range()
+{
+	RANGE=${1#HEAD\~}
+
+	get_svn_log $(($RANGE + 1))
+
+	IFS=''
+	cur_revision=`echo $SVN_LOG | head -1`
+	pre_revision=`echo $SVN_LOG | tail -1`
+	unset IFS
+}
+
+help()
+{
+	echo "Usage: $PROGNAME <revision|HEAD^^^...|HEAD~number|revision1..revision2]"
+}
+
 PROGNAME=`basename $0`
 
 if [ $# -lt 1 ]; then
-    echo "Usage: $PROGNAME REVISION"
-    exit;
+    help
+    exit 1
 fi
 
-echo $1 | grep "\-r" > /dev/null
-[ "$?" -eq 0 ] && r_dashr="-r" || r_dashr="r"
+if echo $1 | grep -q "\.\."; then
+	cur_revision=`echo $1 | cut -d '.' -f 1`
+	pre_revision=`echo $1 | cut -d '.' -f 3`
+elif echo $1 | grep -q "\-r"; then
+	r_dashr="-r"
+	cur_revision="r"${1/${r_dashr}/}
+	pre_revision="r"$((${1/${r_dashr}/}-1))
+elif echo $1 | grep -q "r"; then
+	r_dashr="r"
+	cur_revision="r"${1/${r_dashr}/}
+	pre_revision="r"$((${1/${r_dashr}/}-1))
+elif echo $1 | grep -q "^HEAD\^\+"; then
+	get_caret_range $1
+elif echo $1 | grep -q "^HEAD~"; then
+	get_num_range $1
+else
+	help
+	exit 1
+fi
 
-cur_revision="r"${1/${r_dashr}/}
-pre_revision="r"$((${1/${r_dashr}/}-1))
+echo "cur: $cur_revision pre: $pre_revision"
 
 # Using tmpfs for high performance I/O
 [ -d "/dev/shm" ] && tmpdir="/dev/shm" || tmpdir="/tmp" 
@@ -21,10 +71,16 @@ pre_revision="r"$((${1/${r_dashr}/}-1))
 cur_tmpdir="${tmpdir}/${cur_revision}"
 pre_tmpdir="${tmpdir}/${pre_revision}"
 
+export LC_ALL=POSIX 
 repo_root=`svn info 2> /dev/null | grep "^Repository Root:" | sed -e "s/^Repository Root: //"`
 [ -z "${repo_root}" ] && repo_root="http://rd1-1/subversion"
 
-filelist=`svn log -v -r${cur_revision} ${repo_root} | grep "^   [A|M]" | awk '{print $2}'`
+if [ -n "$r_dashr" ]; then
+	filelist=`svn log -v -r${cur_revision} ${repo_root} | grep "^   [A|M]" | awk '{print $2}'`
+else
+	repo_url=`svn info 2> /dev/null | grep "^URL:" | sed -e "s/^URL: //"`
+	filelist=`svn log -v -r${pre_revision}:${cur_revision} ${repo_url} | grep "^   [A|M]" | awk '{print $2}'`
+fi
 
 mkdir ${cur_tmpdir} ${pre_tmpdir}
 for filepath in ${filelist}; do
