@@ -4,7 +4,7 @@ friendly_remind ()
 {
 	if [ -d $1 ] ; then
 		pushd $1 > /dev/null
-		list=`wcfind . -type f -perm 644`
+		list=`wcfind . -type f -perm \( ! -perm /u+x -o ! -perm /g+x -o ! -perm /o+x \)`
 		if [ "$list" != "" ] ; then
 			echo "following files should have exec permission $1"
 			echo $list 
@@ -21,7 +21,7 @@ if [ -n $1 ]; then
 fi
 
 
-list=`wcfind . -type f -perm 644 -exec file {} \; | grep executable | sed 's/:.*//'`
+list=`wcfind . -type f \( ! -perm /u+x -o ! -perm /g+x -o ! -perm /o+x \) -exec file {} \; | grep executable | sed 's/:.*//'`
 if [ "$list" != "" ] ;then
 	echo "$list" | sed 's/ /\\ /g' | xargs $verbose chmod 755 
 	if [ "$svn_exec" = "0" ]; then
