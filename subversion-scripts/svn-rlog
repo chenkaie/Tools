@@ -2,4 +2,4 @@
 # Show log of remote repository rather than working copy to avoid
 # retrieving outdated log if user forget to `svn update` to HEAD 
 
-svn log -v --stop-on-copy `svn-url $1` | less --tabs=4
+svn log -v --stop-on-copy `svn-url $1` | less --tabs=4 -i
