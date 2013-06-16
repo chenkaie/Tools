@@ -6,7 +6,9 @@ Useful tools to help improving efficiency on Linux
 Usage
 =====
 
-1. git clone this repos to your $HOME dir
+1. Check out from github
+
+        git clone git://github.com/chenkaie/Tools.git ~/Tools
 
 2. Add below to your .bashrc
 
