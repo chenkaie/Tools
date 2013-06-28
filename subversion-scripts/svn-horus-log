@@ -1,0 +1,12 @@
+#!/bin/sh
+
+path=""
+# if the 1st arg is not started with a "-"
+if [ "${1#-}" = "$1" ]; then
+	path="$1"
+	shift
+fi
+
+svn log `svn-horus-url "$path"` $@
+
+exit 0

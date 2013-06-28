@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "`svn-url \"$1\" | sed 's,\(Project/\).*\(app_cluster/\),\1Horus/trunk/\2,'`"
+
+exit 0
