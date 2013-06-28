@@ -36,7 +36,7 @@ case "$1" in
     autossh -M 0 -R 7322:rd1-2:22 arnold@tcdevweb.funp.com -p22 -o TCPKeepAlive=no -o ServerAliveInterval=60
         ;;
 	*amazon*)
-    autossh -M 0 -R 7322:rd1-2:22 ubuntu@amazon.no-ip.org -p22 -o TCPKeepAlive=no -o ServerAliveInterval=60
+    autossh -M 0 -R 7322:rd1-2:22 ubuntu@amazon-ec2.no-ip.org -p22 -o TCPKeepAlive=no -o ServerAliveInterval=60
         ;;
 	*ptt*)
 	$VIMSSH config_system.xml
