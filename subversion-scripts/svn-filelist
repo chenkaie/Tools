@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ -z "$1" ] ; then
+	echo "Usage: svn-filelist revision1 revision2 ..."
+    exit
+fi
+
+IFS=$' '
+
+FileList=""
+RevList="$@"
+
+for i in $RevList; do
+	FileList=${FileList}$(echo -e "\r")$(svn log -v -r$i | grep "^   [A|M]" | awk '{print $2}')
+done
+
+echo ${FileList} | sort | uniq
