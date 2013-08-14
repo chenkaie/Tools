@@ -1,8 +1,7 @@
 #!/usr/bin/perl
 
-# Win32-Exe module: http://search.cpan.org/~autrijus/Win32-Exe-0.08/lib/Win32/Exe.pm
-
-use lib '/home/kent/perl5/lib/perl5/';
+# Win32-Exe module: http://search.cpan.org/~mdootson/Win32-Exe-0.17/lib/Win32/Exe.pm
+use lib '/usr/local/lib/perl5';
 use Win32::Exe;
 
 $target = shift(@ARGV);
