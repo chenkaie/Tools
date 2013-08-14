@@ -20,17 +20,53 @@
 # ccache # 
 ##########
 
+platform=`\which -a arm-linux-gcc 2> /dev/null`
+case $platform in
+	*vivaldi*)
+		platform_suffix="Vivaldi"
+		;;
+	*bach*)
+		platform_suffix="Bach"
+		;;
+	*haydn*)
+		platform_suffix="Haydn"
+		;;
+	*mozart*)
+		platform_suffix="Mozart"
+		;;
+	*montavista*)
+		platform_suffix="DM36X"
+		;;
+	*DM8127*)
+		platform_suffix="DM8127"
+		;;
+	*DM385*)
+		platform_suffix="DM385"
+		;;
+	*xarina*)
+		platform_suffix="Xarina"
+		;;
+	"")
+	echo "[Error] arm-linux-gcc not found."
+	return 1
+	;;
+esac
+
+echo "[Info] You are building on <${platform_suffix}> platform."
+
+CCACHE_BIN=/usr/bin/ccache
+
 # Refrence from "man ccache" -> "SHARING A CACHE"
 export CCACHE_UMASK="002"
 
-export PATH=/home/kent/usr/bin.ln/:$PATH
-export CCACHE_DIR="/dev/shm/.ccache"
+export PATH=/usr/local/bin:$PATH
+export CCACHE_DIR="/tmp/.ccache.${platform_suffix}"
 
 if [ -d "${CCACHE_DIR}" ]; then
     echo "+----------------------------------------------------+"
     echo "|              Current ccache statistics             |"
     echo "+----------------------------------------------------+"
-    /home/kent/usr/bin/ccache -s
+    $CCACHE_BIN -s
 else
     mkdir ${CCACHE_DIR} 
     chmod 1777 ${CCACHE_DIR}
@@ -38,7 +74,7 @@ else
     echo "+----------------------------------------------------+"
     echo "|                Initial ccache                      |"
     echo "+----------------------------------------------------+"
-    /home/kent/usr/bin/ccache --max-size=3G -s
+    $CCACHE_BIN --max-size=3G -s
 
     # Refrence from "man ccache" -> "SHARING A CACHE"
     find ${CCACHE_DIR} -type d | xargs chmod g+s
