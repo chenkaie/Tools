@@ -18,7 +18,14 @@ fi
 pattern="$1"
 INDEX=$2
 
-function _wcgrep() 
+function exist () { type "$1" &> /dev/null; }
+
+function _ag()
+{
+    ag --smart-case --nocolor --nogroup "$pattern" | nl -n ln | grep -Ii --colour=auto "$pattern"
+}
+
+function _wcgrep()
 {
 	case "$0" in
 		*WG*)
@@ -36,18 +43,18 @@ function _wcgrep()
 		# [NOTE] ignore case => slower
 		WCGREP_GREPARGS=${WCGREP_GREPARGS}" -i"
 		find $pathargs -regex ${WCGREP_IGNORE:-'.*/\.git\(/\|$\)\|.*~$\|.*/\.svn\(/\|$\)'} -prune -o \
-			-type f -print0 | xargs -r0 ${WCGREP_GREP:-grep} ${WCGREP_GREPARGS:--HnI} \
-			$grepargs "$pattern" | nl -n ln | grep -Ii --colour=auto $grepargs "$pattern"
+			-type f -print0 | xargs -r0 ${WCGREP_GREP:-grep} ${WCGREP_GREPARGS:--HnI} "$pattern" \
+			| nl -n ln | grep -Ii --colour=auto "$pattern"
 		;;
 	esac
 }
 
 if [ -n "$INDEX" ]; then
-	result=$(_wcgrep)
+	exist ag && result=$(_ag) || result=$(_wcgrep)
 
-	if [[ "$INDEX" == "a" ]]; then
-		#FIXME: Why "tr" executed before "cut" in this statement FILENAME=`echo $result | cut -d ":" -f 1 | tr '\n' '@' | sed 's/@/ /g' 
-		FILENAME=`echo $result | awk '{print $2}' | cut -d ":" -f 1 | uniq` 
+	if [ "$INDEX" == "a" ]; then
+		#FIXME: Why "tr" executed before "cut" in this statement FILENAME=`echo $result | cut -d ":" -f 1 | tr '\n' '@' | sed 's/@/ /g'
+		FILENAME=`echo $result | awk '{print $2}' | cut -d ":" -f 1 | uniq`
 		FILENAME1=`echo $FILENAME | tr '\n' '@' | sed 's/@/ /g'`
 		echo Edit $INDEX, Filename: $FILENAME1
 		$EDITOR -X -p $FILENAME1
@@ -58,6 +65,6 @@ if [ -n "$INDEX" ]; then
 		$EDITOR $FILENAME +$LINENUMBER
 	fi
 else
-	_wcgrep
+	exist ag && _ag || _wcgrep
 fi
 
