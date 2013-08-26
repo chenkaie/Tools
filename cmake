@@ -6,7 +6,7 @@
 
 #make $* 2>&1 | colormake.pl `stty size`
 case "$@" in
-	*menuconfig*)
+	menuconfig|firmware*|sample*|doctor|release)
 		make $@
 		;;
 	*)
