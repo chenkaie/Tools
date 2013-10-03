@@ -1,1 +1,17 @@
-ydict-py
+#!/bin/sh
+
+exist () { type "$1" &> /dev/null; }
+
+CUR_PY_VER=$(python -V 2>&1 | cut -d ' ' -f 2)
+if [[ "$CUR_PY_VER" < "2.7.0" ]]; then
+	if exist pythonbrew ; then
+		VERSION=$(pythonbrew list | grep "2.7" | cut -d '-' -f 2 | cut -d ' ' -f 1)
+		echo Please use Python 2.7.0 or greater. 
+		echo Exec \"pythonbrew switch $VERSION\" first.
+		exit 1
+	else
+		echo Please use Python 2.7.0 or greater. 
+	fi
+fi
+
+ydict-py "$@"
