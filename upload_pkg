@@ -8,6 +8,7 @@ if (!$target)
 	print "Usage: update_pkg host-ip \n";
 	exit 1;
 }
+
 if (!$PRODUCTDIR)
 {
 	print "Please source environment file first!\n";
@@ -25,10 +26,9 @@ while (! $ftp->cwd("/mnt/ramdisk/"))
 {
 	$ftp->mkdir("/mnt/ramdisk/", 1);
 }
-$ftp->put("$PRODUCTDIR/release/package/$PRODUCTVER-$LANGUAGE/$PRODUCTVER.flash.pkg", "flash.pkg")
+$ftp->put("$PRODUCTDIR/release/package/$PRODUCTVER/$PRODUCTVER.flash.pkg", "flash.pkg")
 	 or die "put failed ", $ftp->message;
-#$ftp->put("$PRODUCTDIR/images/$PRODUCTVER.flash.pkg")
-#	 or die "put failed ", $ftp->message;
+
 $ftp->quit;
 
 print "Starting to test if Boa is up ", $target, "\n";
