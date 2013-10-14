@@ -44,6 +44,9 @@ case "$1" in
 	*rdp*)
 	$VIMSSH config_ptzctrl.xml
         ;;
+	*diskstation*)
+	$VIMSSH config_ddns.xml
+        ;;
 	*)
 	echo "Usage : $0 [dd-wrt|totoro|funp|ptt|rdp]"
 	exit 1
