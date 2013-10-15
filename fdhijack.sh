@@ -1,6 +1,6 @@
-#!/bin/sh 
-# 
-# Redirect stdin, stdout, stderr of a daemon to /dev/pts/# 
+#!/bin/sh
+#
+# Redirect stdin, stdout, stderr of a daemon to /dev/pts/#
 #
 #################################################################################################################
 # Ref: stdio buffering: http://www.pixelbeat.org/programming/stdio_buffering/
@@ -42,27 +42,29 @@ else
 	exit 1
 fi
 
-pid=$1 
-dst=$2 
+pid=$1
+dst=$2
 
 # -f : flushes all open output streams to avoid buffered IO
 if [ "${2}" = "-f" ]; then
-	( 
-		echo "attach $pid" 
+	(
+		echo "attach $pid"
 		echo 'call fflush(0)'
-		echo 'detach' 
-		echo 'quit' 
+		echo 'detach'
+		echo 'quit'
 		sleep 5
 	) | ${GDB} -q -x -
-else 
-	( 
-		echo "attach $pid" 
-		echo 'call open("'$dst'", 66, 0666)' 
+else
+	(
+		echo "attach $pid"
+		echo 'call open("'$dst'", 66, 0666)'
 		#echo 'call dup2($1,0)' # stdin
 		echo 'call dup2($1,1)'  # stdout, $1 derived from previous open() by gdb
 		echo 'call dup2($1,2)'  # stderr
-		echo 'p setvbuf(stdout, 0, 2, 0)' #set _IONBF unbuffered
-		echo 'p setvbuf(stderr, 0, 2, 0)' #set _IONBF unbuffered
+        # NOTE: setvbuf cause SIGSEGV in some situation,
+        #       uncomment them if you needed.
+        #echo 'p setvbuf(stdout, 0, 2, 0)' #set _IONBF unbuffered
+        #echo 'p setvbuf(stderr, 0, 2, 0)' #set _IONBF unbuffered
 		echo 'call close($1)'
 		echo 'detach'
 		echo 'quit'
