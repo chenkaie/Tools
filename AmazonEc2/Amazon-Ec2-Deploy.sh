@@ -37,7 +37,8 @@
 sudo sed -i "s/^PasswordAuthentication no/PasswordAuthentication yes/" /etc/ssh/sshd_config
 sudo /etc/init.d/ssh restart
 
-sudo ln -s -n -i /bin/bash /bin/sh
+sudo dpkg-reconfigure bash
+# sudo ln -s -n -i /bin/bash /bin/sh
 
 # 1.
 sudo passwd ubuntu
