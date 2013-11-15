@@ -31,8 +31,11 @@ case $platform in
 	*haydn*)
 		platform_suffix="Haydn"
 		;;
-	*mozart*)
-		platform_suffix="Mozart"
+	*mozart3e*|*mozart3v2*|*mozart3v3*)
+		platform_suffix="Mozart3x"
+		;;
+	*mozart3*)
+		platform_suffix="Mozart3"
 		;;
 	*montavista*)
 		platform_suffix="DM36X"
