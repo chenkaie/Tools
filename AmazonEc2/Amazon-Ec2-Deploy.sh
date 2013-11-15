@@ -62,7 +62,7 @@ ln -s $HOME/Repos/Tools $HOME/Tools
 mv $HOME/.bashrc $HOME/.bashrc_ori
 
 ln -s $HOME/Repos/rcfiles/ $HOME/Repos/DotFiles/
-cd $HOME/Repos/DotFiles; ./deploy-links; cd $HOME
+cd $HOME/Repos/DotFiles; git submodule update --init; ./deploy-links; cd $HOME
 
 # packages
 sudo aptitude install exuberant-ctags cscope lsb-release cowsay inadyn
