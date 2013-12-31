@@ -9,6 +9,8 @@
 #                 "svn_clear" will remove all the ".svn" directory recursively
 #                 from the PATH you gived. The current directory by default.
 #################################################################################
+IFS='
+'
 
 WORK_PATH=$1
 if [ -z "$WORK_PATH" ]; then
