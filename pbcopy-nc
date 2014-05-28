@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Mac OS X `pbcopy` clone of network manner by nc (netcat)
+# Recommended using together with "Clipboard Listener (Java)" 
+# Ref: http://www.hanhuy.com/pfn/integrating_screen_and_clipboard
+
+REMOTE="172.16.52.54"
+
+nc ${REMOTE} 4573 <&0
