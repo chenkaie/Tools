@@ -2,7 +2,7 @@
 set count 1;
 while { $count > 0 } {
 	puts "[exec date], Run at $count-th time\n";
-	spawn tunnel.sh diskstation
+	spawn pipe.sh dd-wrt
 	interact timeout 300 { send "\x00" }
 	wait
 	set count [expr $count+1];
