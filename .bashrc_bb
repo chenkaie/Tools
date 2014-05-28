@@ -26,6 +26,9 @@ alias b='cd -'
 alias cd..='cd ..'
 alias path='echo -e ${PATH//:/\\n}'
 
+# netstat -npl
+alias netstat='netstat -np'
+
 #######################
 # Env var             #
 #######################
@@ -72,6 +75,20 @@ mt ()
 }
 
 #######################
+# Sysinfo             #
+#######################
+
+echo "=================================="
+uname -mnrs
+echo "=================================="
+uptime
+echo "=================================="
+who
+echo "=================================="
+echo "Welcome to $IP_HERE, $FROM_ID "
+echo "=================================="
+
+#######################
 # IP Camera           #
 #######################
 
@@ -87,18 +104,9 @@ PS1=${TXTGRN}"[${FW_VER_SHORT}]"${TXTRST}'@'${TXTPUR}${IP_HERE_SHORT}${TXTRST}':
 
 DEV_SERVER="172.16.5.32"
 alias mount-home="mount -t nfs -o tcp,nolock $DEV_SERVER:/home /home"
+alias mount-rw="umount /etc; mount -o rw,remount /"
 
-#######################
-# Sysinfo             #
-#######################
-
-echo "=================================="
-uname -mnrs
-echo "=================================="
-uptime
-echo "=================================="
-who
-echo "=================================="
-echo "Welcome to $IP_HERE, $FROM_ID "
-echo "=================================="
+echo "----------------------------------"
+cat /var/run/sessioninfo
+echo "----------------------------------"
 
