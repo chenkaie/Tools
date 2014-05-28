@@ -6,7 +6,7 @@ if [ $# -lt 1 ]; then
 fi
 
 SERVER="$1"
-USERNAME="$2"
+[ -n "$2" ] && USERNAME="$2" || USERNAME="root"
 PASSWORD="$3"
 
 # Enable telnet
