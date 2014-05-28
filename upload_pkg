@@ -22,10 +22,9 @@ $ftp = Net::FTP->new($target, Debug => 1)
 $ftp->login("root", "")
 	 or die "Cannot login ", $ftp->message;
 $ftp->binary();
-while (! $ftp->cwd("/mnt/ramdisk/"))
-{
-	$ftp->mkdir("/mnt/ramdisk/", 1);
-}
+
+print "Firmware: $PRODUCTDIR/release/package/$PRODUCTVER/$PRODUCTVER.flash.pkg\n";
+
 $ftp->put("$PRODUCTDIR/release/package/$PRODUCTVER/$PRODUCTVER.flash.pkg", "flash.pkg")
 	 or die "put failed ", $ftp->message;
 
