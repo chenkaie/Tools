@@ -76,10 +76,10 @@ repo_root=`svn info 2> /dev/null | grep "^Repository Root:" | sed -e "s/^Reposit
 [ -z "${repo_root}" ] && repo_root="http://rd1-1/subversion"
 
 if [ -n "$r_dashr" ]; then
-	filelist=`svn log -v -r${cur_revision} ${repo_root} | grep "^   [A|M]" | awk '{print $2}'`
+	filelist=`svn log -v -r${cur_revision} ${repo_root} | grep "^   [A|M]" | awk '{print $2}' | sort | uniq`
 else
 	repo_url=`svn info 2> /dev/null | grep "^URL:" | sed -e "s/^URL: //"`
-	filelist=`svn log -v -r${pre_revision}:${cur_revision} ${repo_url} | grep "^   [A|M]" | awk '{print $2}'`
+	filelist=`svn log -v -r${pre_revision}:${cur_revision} ${repo_url} | grep "^   [A|M]" | awk '{print $2}' | sort | uniq`
 fi
 
 mkdir ${cur_tmpdir} ${pre_tmpdir}
