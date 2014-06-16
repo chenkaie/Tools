@@ -1,0 +1,6 @@
+#!/bin/sh
+
+CAM_LIST="$HOME/tmp/camera_list.txt"
+[ -n "$1" ] && SEARCH_KEY="$1" || SEARCH_KEY=""
+[ -f "$CAM_LIST" ] && rm $CAM_LIST
+iw2_air -f $CAM_LIST -s "$SEARCH_KEY"
