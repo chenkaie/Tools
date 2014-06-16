@@ -105,6 +105,7 @@ PS1=${TXTGRN}"[${FW_VER_SHORT}]"${TXTRST}'@'${TXTPUR}${IP_HERE_SHORT}${TXTRST}':
 DEV_SERVER="172.16.5.32"
 alias mount-home="mount -t nfs -o tcp,nolock $DEV_SERVER:/home /home"
 alias mount-rw="umount /etc; mount -o rw,remount /"
+alias mount-debugfs="mount -t debugfs debugfs /sys/kernel/debug"
 
 echo "----------------------------------"
 cat /var/run/sessioninfo
