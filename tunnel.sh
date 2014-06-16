@@ -16,12 +16,19 @@ case "$1" in
     #    protocol is then used to determine where to connect to from the remote machine.  Currently the SOCKS4 and SOCKS5 protocols are supported, and ssh will
     #    act as a SOCKS server.  Only root can forward privileged ports.  Dynamic port forwardings can also be specified in the configuration file.
 	#
+	#    The bind_address of "localhost" indicates that the listening port be bound for local use only,
+	#    while an empty address or '*' indicates that the port should be available from all interfaces.
+	#
 	# Note: -D mode only do a port fowarding on local side, i.e. works only on telnet localhost port, rather than telnet PUBLIC_IP port
-	#       Therefore we have to do a public port fowarding e.g. 
-	#			step 1. kent@hostname   $ ssh -R 7321:rd1-2:22 ubuntu@amazon-ec2.no-ip.org -o TCPKeepAlive=no -o ServerAliveInterval=60 
+	#       Therefore we have to do a public port fowarding e.g.
+	#			step 1. kent@hostname   $ ssh -R 7321:rd1-2:22 ubuntu@amazon-ec2.no-ip.org -o TCPKeepAlive=no -o ServerAliveInterval=60
 	#       	step 2. ubuntu@hostname $ ssh -D 8888 localhost -p7321 -lkent -vvv -N
 	#       	step 3. ubuntu@hostname $ socat TCP-LISTEN:12345,fork TCP:localhost:8888
 	#           step 4. Setup browser proxy settings as "SOCK v5" + "amazon-ec2.no-ip.org:12345"
+	#
+	#
+	# Update: When '*' is used as bind_address, everything makes easy. Make sure <interface:port> not blocked by iptables :)
+	#         kent@mbpr $ ssh -D 8080 amazon-ec2.no-ip.org -p7321 -lkent
 
     autossh -M 0 -D 172.16.5.31:52525 -R 7322:rd1-2:22 root@chenkaie.no-ip.org -p2222 -o TCPKeepAlive=no -o ServerAliveInterval=60
         ;;
