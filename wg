@@ -22,7 +22,7 @@ function exist () { type "$1" &> /dev/null; }
 
 function _ag()
 {
-	ag --smart-case --nocolor --nogroup "$pattern" | strings | sort | nl -n ln | grep -P -Ii --colour=auto "$pattern"
+	ag --smart-case --nocolor --nogroup "$pattern" | strings -e S | sort | nl -n ln | grep -P -Ii --colour=auto "$pattern"
 	return 0;
 }
 
