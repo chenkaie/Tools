@@ -1,0 +1,14 @@
+#!/bin/sh
+
+case "$0" in
+    *-url*)
+        svn info $1 | grep ^URL | sed -e 's/^.*http/http/'
+        ;;
+    *-root*)
+        svn info $1 | grep "^Repository Root" | sed -e 's/^.*http/http/'
+        ;;
+    *)
+    echo "Usage: svn-url | svn-root"
+    exit 1
+    ;;
+esac
