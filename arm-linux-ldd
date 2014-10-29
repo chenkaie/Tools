@@ -1,0 +1,5 @@
+#!/bin/sh
+# Method1:
+arm-linux-readelf -d $1 |grep "Shared library"
+# Method2:
+arm-linux-objdump -x $1 | grep "NEEDED"
