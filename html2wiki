@@ -19,10 +19,12 @@ if [ -z "$ARGUMENT" ] ; then
     exit 1
 fi
 
-sed -e 's/<body bgcolor="\(.*\)" text="\(.*\)">/<div style="font-size:13px; font-family: Consolas, Monaco, Courier New; background:\1; color:\2;">/;
+sed -e 's/<body bgcolor="\(.*\)" text="\(.*\)" \(.*\)>/<div style="font-size:13px; font-family: Consolas, Monaco, Courier New; background:\1; color:\2;">/;
         s/<font face="\(.*\)">//;
-        s/<\/font><\/body>/<\/div>/;
+        s/<\/font>$/<\/div>/;
+        s/<\/html>$//;
+        s/<\/body>$//;
         s/\[\[/<nowiki>\[\[<\/nowiki>/g; 
-        s/ <\/span><br>/\&nbsp;<\/span><br>/g
-        1,7d; $d' $1
+        s/ <\/span><br>/\&nbsp;<\/span><br>/g;
+        1,40d; $d' $1
 
