@@ -73,5 +73,5 @@ mv $HOME/.bashrc $HOME/.bashrc_ori
 cd ${UNIX_ENV_DEPLY}/DotFiles; git submodule update --init; ./deploy-links; cd $HOME
 
 # packages
-sudo apt-get install exuberant-ctags cscope lsb-release cowsay
+sudo apt-get install exuberant-ctags cscope lsb-release cowsay silversearcher-ag id-utils
 
