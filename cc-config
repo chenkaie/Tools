@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ "$CC" = "" ]; then
+	CC=gcc
+fi
+$CC "$@" -v -E -x c /dev/null 2>&1
+
+# Learned this trick from: http://comments.gmane.org/gmane.comp.compilers.llvm.cvs/125877
+# Note that "gcc -dumpmachine" is easier if you only want the target triplet

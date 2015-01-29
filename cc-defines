@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# Show C/C++ macros pre-defined by the compiler:
+# 
+# $ cc-defines | head 
+# #define __amd64 1
+# #define __amd64__ 1
+# <...>
+#
+# $ CC=arm-none-eabi-gcc cc-defines  | head
+# #define __ACCUM_EPSILON__ 0x1P-15K
+# <...>
+# #define __arm__ 1
+# <...>
+
+# See also:
+# GCC Manual: Common Predefined Macros: http://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
+# Pre-defined C/C++ Compiler Macros Wiki: http://sourceforge.net/p/predef/wiki/Home/
+# C/C++ tip: How to list compiler predefined macros: http://nadeausoftware.com/articles/2011/12/c_c_tip_how_list_compiler_predefined_macros
+
+if [ "$CC" = "" ]; then
+	CC=gcc
+fi
+$CC "$@" -dM -E -x c - < /dev/null | sort
