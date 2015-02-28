@@ -5,8 +5,10 @@
 #
 
 #make $* 2>&1 | colormake.pl `stty size`
+# Uncomment below line for debug purpose
+#echo "$@" >> /tmp/makelog
 case "$@" in
-	*menuconfig*|*firmware*|*sample*|doctor|release)
+	*menuconfig*|*firmware*|*sample*|doctor|release|*linux*|*oldconfig*)
 		make $@
 		;;
 	*)
