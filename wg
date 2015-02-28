@@ -23,7 +23,16 @@ function exist () { type "$1" &> /dev/null; }
 
 function _ag()
 {
-	ag --smart-case --nocolor --nogroup --skip-vcs-ignores "$pattern" | strings -e S | sort | nl -n ln | grep -P -Ii --colour=auto "$pattern"
+	case `uname` in
+		Darwin|*BSD)
+			_strings='strings'
+			;;
+		*)
+			_strings='strings -e S'
+			;;
+	esac
+
+	ag --smart-case --nocolor --nogroup --skip-vcs-ignores "$pattern" | $_strings | sort | nl -n ln | grep -P -Ii --colour=auto "$pattern"
 	return 0;
 }
 
