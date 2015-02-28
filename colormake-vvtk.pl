@@ -94,6 +94,10 @@ while (<>)
         #$thisline =~ s|(warning:\s+)(.*)$|$1$col_warning$2|;
         $thisline =~ s|(\s+)(.*)$|$1$col_warning$2|;
     }
+	elsif ($thisline =~ /WARNING:/)
+    {
+        $thisline =~ s|(\s+)(.*)$|$1$col_brown$2|;
+    }
 	elsif ($thisline =~ /error:/)
     {
 		$thisline =~ s/(\d+:\s+)/$1$col_default$col_error/;
