@@ -1,12 +1,13 @@
 #!/bin/sh
 
 if [ $# -lt 2 ]; then
-	echo "Usage: $0 <FW_BIN> <DEVICE_IP>"
+	echo "Usage: $0 <DEVICE_IP> <FW_BIN>"
 	exit 0
 fi
 
-FW_BIN="$1"
-DEVICE_IP="$2"
+DEVICE_IP="$1"
+FW_BIN="$2"
+[ "$FW_BIN" = "-" ] && FW_BIN="$PRODUCTDIR/REL-build/artifacts/*.bin"
 
 sshpass -p ubnt scp $FW_BIN ubnt@$DEVICE_IP:/tmp/fwupdate.bin
 [ $? -eq 0 ] && sshpass -p ubnt ssh ubnt@$DEVICE_IP /usr/bin/fwupdate -m || echo "FW upload fail!"
