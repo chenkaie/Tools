@@ -50,10 +50,12 @@ tmux new-session     -d -s Tunnel
 tmux rename-window      -t Tunnel:1 "ddwrt"
 tmux new-window         -t Tunnel:2
 tmux split-window    -v -t Tunnel:2
+tmux new-window         -t Tunnel:3 -n "hfs"
 
 tmux send-keys          -t Tunnel:1 'cd $tools; ./test.expect' C-m
 tmux send-keys          -t Tunnel:2.top "watch ccache -s" C-m
 tmux send-keys          -t Tunnel:2.bottom "top" C-m
+tmux send-keys          -t Tunnel:3 "cd ${HOME}/ArmTools/UVC; python -m SimpleHTTPServer 8080" C-m
 
 # Switch to window 1
 tmux select-window      -t Tunnel:1
