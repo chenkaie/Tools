@@ -24,3 +24,5 @@ Kent Chen (chenkaie) <chenkaie@gmail.com>
 * [@chenkaie](https://twitter.com/#!/chenkaie) on Twitter
 * [@chenkaie](http://www.plurk.com/chenkaie) on Plurk 
 * <http://chenkaie.blogspot.com>
+
+Join the chat at https://gitter.im/chenkaie/Tools
