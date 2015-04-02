@@ -1,0 +1,203 @@
+#!/bin/sh
+# This .bashrc_bb is useful for busybox environment
+
+BASHRC_FILENAME=".bashrc_bb_u"
+
+#######################
+# Alias               #
+#######################
+
+alias ll='ls -al'                   # long list format
+alias lk='ls -lk'                   # --block-size=1K
+alias lt='ls -ltr'                  # sort by date (mtime)
+alias lc='ls -ltcr'                 # sort by and show change time
+alias la='ls -ltur'                 # sort by and show access time
+alias lx='ls -lX'                  # sort by extension
+alias lz='ls -lSr'                  # sort by size
+alias ld='ls -d */'                 # es only Dirs
+alias l.='ls -dAFh .[^.]*'          # ls only Dotfiles
+alias lst='ls -hFtal | grep $(date +%Y-%m-%d)' #ls Today
+
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ......='cd ../../../../..'
+
+alias b='cd -'
+alias cd..='cd ..'
+alias path='echo -e ${PATH//:/\\n}'
+
+# netstat -npl
+alias netstat='netstat -np'
+
+# UBNT only
+alias save='ubnt_cmd_persist.sh'
+alias savecfg='cfgmtd -w -f /tmp/system.cfg'
+
+#######################
+# Env var             #
+#######################
+
+grep "feature_wifi" /etc/board.info > /dev/null 2>&1
+interface=$([ $? -eq 0 ] && echo wlan0 || echo eth0)
+
+IP_HERE=$(ifconfig $interface | sed -n -e 's/:127\.0\.0\.1 //g' -e 's/ *inet addr:\([0-9.]\+\).*/\1/gp')
+
+#######################
+# Functions           #
+#######################
+
+# ls when cd, it's useful
+cd ()
+{
+	if [ -n "$1" ]; then
+		chdir "$@"&& ls
+	else
+		chdir ~&& ls
+	fi
+}
+
+fe ()
+{
+	find . -iname '*'${1:-}'*' -exec ${2:-ls} {} \;
+}
+
+wg ()
+{
+	grep -ri "$1" *
+}
+
+mt ()
+{
+	if [ $# -ne 1 ]; then
+		echo "Usage: mt /path/to/folder"
+		return 0
+	fi
+
+	RWDIR=$1
+	TMPDIR=`mktemp -d -p /tmp/`
+	cp -a $RWDIR/* $TMPDIR
+	mount -t tmpfs -o size=100M tmpfs $RWDIR
+	cp -a $TMPDIR/* $RWDIR/
+	rm -rf $TMPDIR
+}
+
+dbgtools ()
+{
+	if [ $# -ne 1 ]; then
+		echo "Usage: dbgtools [2|3]"
+		return 0
+	fi
+
+	local GEN=$1
+	cd $HOME
+	for tool in busybox strace gdb lsof tmux .tmux_uart.conf; do
+		rm $tool >/dev/null 2>&1
+		wget http://$DEV_SERVER:8080/gen$GEN/$tool
+		chmod +x $tool
+	done
+	export PATH=/etc/persistent/:$PATH
+
+	# Creating busybox symlinks
+	mkdir bin_bb; cd bin_bb
+	busybox --help | busybox grep 'Currently defined functions:' -A300 \
+	               | busybox grep -v 'Currently defined functions:' \
+				   | busybox tr , '\n' \
+				   | busybox xargs -n1 busybox ln -sf ../busybox
+	export PATH=`pwd`:$PATH
+	cd -
+
+	# Fancy colorful prompt support
+	mv /etc/profile /etc/profile.ori
+	cp $BASHRC_FILENAME /etc/profile
+	busybox sh --login
+}
+
+bwps1 ()
+{
+	PS1=[${MODELNAME}.${FW_VER_SHORT}]'@'${IP_HERE_SHORT}' # '
+}
+
+mtubifs ()
+{
+	mknod /dev/ubi_ctrl c 10 63
+	ubiattach /dev/ubi_ctrl -O 2048 -m 9
+
+	ubimkvol /dev/ubi1 -N spare0 -s 50MiB && mkfs.ubifs /dev/ubi1_0 -x none
+	ubimkvol /dev/ubi1 -N spare1 -s 50MiB && mkfs.ubifs /dev/ubi1_1 -x lzo
+
+	ubinfo -a
+
+	mkdir -p /tmp/ubi_spare0 /tmp/ubi_spare1
+	mount -t ubifs ubi1:spare0 /tmp/ubi_spare0
+	mount -t ubifs ubi1:spare1 /tmp/ubi_spare1
+}
+
+runtmux ()
+{
+	type "stty" &> /dev/null
+	if [ 0 -eq $? ]; then
+		# Resizing a terminal
+		# Unlike ssh, serial connection doesn't have a mechanism to transfer something like SIGWINCH when a terminal is resized.
+		# This will cause odd problem with some programs (e.g. less). Resize the terminal via `stty` is a workaround
+
+		# Try to get below corresponding COLUMNS/LINES value by `resize` shell command
+		COLUMNS=177; LINES=47;
+
+		# serial/uart will get "0(rows) 0(cols)" on running ttysize
+		[ "`ttysize`" = "0 0" ] && stty cols $COLUMNS rows $LINES
+
+		TERM=xterm tmux -2 -f .tmux_uart.conf
+	else
+		echo "Please run dbgtools [2|3] first"
+	fi
+}
+
+help ()
+{
+	echo "=================================="
+	echo "Functions:"
+	grep " ()$" $BASHRC_FILENAME | tr '\r\n' ' '
+	echo ""
+	echo "=================================="
+	echo "Alias:"
+	alias | sort
+	echo "=================================="
+}
+
+#######################
+# Sysinfo             #
+#######################
+
+echo "=================================="
+uname -mnrs
+echo "=================================="
+uptime
+echo "=================================="
+cat /etc/board.info |grep board
+echo "=================================="
+echo "Welcome to $IP_HERE, $FROM_ID "
+echo "=================================="
+echo "Usage: help()"
+echo "=================================="
+
+#######################
+# IP Camera           #
+#######################
+
+# Readable PS1
+TXTGRN="\[\033[0;32m\]"
+TXTPUR="\[\033[0;35m\]"
+TXTRST="\[\033[0m\]"
+
+IP_HERE_SHORT=${IP_HERE#10.2.}
+FW_VER=`cat /lib/version`
+FW_VER_SHORT=`echo $FW_VER | sed 's/\(.*\)\.v\(.*\)\.......\...../v\2/'`
+MODELNAME=`sed -n "/board.name=\(.*\)/{s//\1/p;q}" /etc/board.info`
+PS1=${TXTGRN}"[${MODELNAME}.${FW_VER_SHORT}]"${TXTRST}'@'${TXTPUR}${IP_HERE_SHORT}${TXTRST}':\w \$ '
+
+DEV_SERVER="10.2.0.169"
+alias mount-home="mkdir /home; mount -t nfs -o tcp,nolock $DEV_SERVER:/home /home"
+alias mount-rw="mount -t ubifs -o rw,remount ubi0:rootfs /"
+
