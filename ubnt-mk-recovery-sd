@@ -1,0 +1,5 @@
+#!/bin/sh
+# Usage: https://ubiquiti.atlassian.net/wiki/display/AIRVISION/UVC+Micro+Recovery
+
+FW_BIN=$(ls $IMAGEDIR/*[^bootloader].bin)
+sudo dd if=$FW_BIN of=/dev/sdd bs=8M
