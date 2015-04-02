@@ -1,0 +1,49 @@
+#!/bin/sh
+# Usage: execute `source ubnt-devel-aircam` under top level folder of aircam-gm
+
+git rev-parse --show-toplevel > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+	AIRCAMDIR=$(git rev-parse --show-toplevel)
+else
+	echo "Please run under a aircam-gm git repo!"
+	exit 1
+fi
+
+export PRODUCTDIR=$AIRCAMDIR
+
+# For Openwrt build system (refer to Openwrt/Makefile)
+# Export below variable, you can make any package w/o typing annyoing long string
+# make package/xxx/compile => make compile (or just make)
+# make package/xxx/install => make install
+# make package/xxx/clean   => make clean
+
+export TOPDIR=${PRODUCTDIR}/.openwrt
+export INCLUDE_DIR=${TOPDIR}/include
+
+# Fetch $GEN=[genXF] and $CONF=[rel|dbg], read from last built
+source $AIRCAMDIR/.marker-make-target
+export GEN=$GEN
+export CONF=$CONF
+echo Last build: GEN=$GEN CONF=$CONF
+
+# export some useful env var
+export ROOTFSDIR=${PRODUCTDIR}/builders/make/out_${GEN}_${CONF}/build/root_fs
+export IMAGEDIR=${PRODUCTDIR}/builders/make/out_${GEN}_${CONF}/build/artifacts
+export STAGINGDIR=${PRODUCTDIR}/.openwrt/staging_dir
+export TARGETDIR=${PRODUCTDIR}/.openwrt/build_dir/target-arm_*
+
+# Make symlink
+ln -sf builders/make/out_${GEN}_${CONF}/build/root_fs REL-root_fs
+ln -sf builders/make/out_${GEN}_${CONF}/build/artifacts REL-artifacts
+ln -sf builders/make/out_${GEN}_${CONF}/full_target/bin/ REL-sources
+ln -sf openwrt-${GEN}-${CONF} .openwrt
+ln -sf .openwrt/staging_dir/target-*/root-ambarella/ root-ambarella
+ln -sf .openwrt/build_dir/toolchain-*/linux linux
+ln -sf .openwrt/bin/ambarella/amboot-ambarella/*kernel_lnx_release.bin REL-preload_image.bin
+ln -sf $IMAGEDIR/*bootloader.bin REL-preload_image.bin
+
+alias rcd='cd ${PRODUCTDIR}/builders/make/out_${GEN}_${CONF}/build;pwd'
+alias rcd-openwrt='cd ${PRODUCTDIR}/root-ambarella;pwd'
+alias catenv='less ${PRODUCTDIR}/builders/make/env_${GEN}.mk'
+
+#godir openwrt
