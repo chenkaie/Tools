@@ -4,7 +4,7 @@
 # Recommended using together with "Clipboard Listener (Java)"
 # Ref: http://www.hanhuy.com/pfn/integrating_screen_and_clipboard
 
-REMOTE="172.16.52.54"
+REMOTE="kentmbpr-ubnt.local"
 
 if [ -z "$1" ]; then
 	# Read content from STDIN, a super cool and ELEGANT way
