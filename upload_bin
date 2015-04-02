@@ -7,7 +7,13 @@ fi
 
 DEVICE_IP="$1"
 FW_BIN="$2"
-[ "$FW_BIN" = "-" ] && FW_BIN="$PRODUCTDIR/REL-build/artifacts/*.bin"
+
+if [ "$FW_BIN" = "-" ]; then
+	source ubnt-devel-aircam
+	FW_BIN=$(ls $IMAGEDIR/*[^bootloader].bin)
+fi
+
+echo "Firmware name: `basename $FW_BIN`"
 
 sshpass -p ubnt scp $FW_BIN ubnt@$DEVICE_IP:/tmp/fwupdate.bin
 [ $? -eq 0 ] && sshpass -p ubnt ssh ubnt@$DEVICE_IP /usr/bin/fwupdate -m || echo "FW upload fail!"
