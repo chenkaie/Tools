@@ -18,6 +18,12 @@
 # Pre-defined C/C++ Compiler Macros Wiki: http://sourceforge.net/p/predef/wiki/Home/
 # C/C++ tip: How to list compiler predefined macros: http://nadeausoftware.com/articles/2011/12/c_c_tip_how_list_compiler_predefined_macros
 
+# See also:
+# http://www.commandlinefu.com/commands/view/3917/display-gcc-predefined-macros#comment
+# 1: gcc -dM -E - <<<''
+# 2: echo | gcc -dM -E -
+# 3: cpp -dM /dev/null
+
 if [ "$CC" = "" ]; then
 	CC=gcc
 fi
