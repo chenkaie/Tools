@@ -1,5 +1,10 @@
 #!/bin/sh
 # Usage: https://ubiquiti.atlassian.net/wiki/display/AIRVISION/UVC+Micro+Recovery
 
+if [ -z "${PRODUCTDIR}" ]; then
+	echo "Please source environment file first!"
+	exit 1
+fi
+
 FW_BIN=$(ls $IMAGEDIR/*[^bootloader].bin)
 sudo dd if=$FW_BIN of=/dev/sdd bs=8M
