@@ -8,3 +8,4 @@ fi
 
 FW_BIN=$(ls $IMAGEDIR/*[^bootloader].bin)
 sudo dd if=$FW_BIN of=/dev/sdd bs=8M
+sync
