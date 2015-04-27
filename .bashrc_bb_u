@@ -92,7 +92,7 @@ dbgtools ()
 
 	local GEN=$1
 	cd $HOME
-	for tool in busybox strace gdb lsof tmux .tmux_uart.conf; do
+	for tool in busybox strace gdb lsof tmux .tmux_uart.conf libreadline.so.6 libncurses.so.5; do
 		rm $tool >/dev/null 2>&1
 		wget http://$DEV_SERVER:8080/gen$GEN/$tool
 		chmod +x $tool
