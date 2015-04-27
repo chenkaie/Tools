@@ -5,7 +5,7 @@
 ###########
 
 # Setup some variables needed for bootstrapping the environment
-ROOT=$HOME/Project
+ROOT=$HOME/project
 
 ##########
 # S:Main #
@@ -29,10 +29,10 @@ tmux new-window         -t Main:10 -n "mbpr"
 # Send commands to the windows, use "C-m" to emulate "enter"
 
 tmux send-keys          -t Main:1 "cd ${ROOT}/aircam-gm/;      source ubnt-devel-aircam" C-m
-tmux send-keys          -t Main:2 "cd ${ROOT}/AIRCAM-GM-GEN2/; source ubnt-devel-aircam" C-m
-tmux send-keys          -t Main:3 "cd ${ROOT}/AIRCAM-GM-GEN2/; source ubnt-devel-aircam" C-m
-tmux send-keys          -t Main:4 "cd ${ROOT}/AIRCAM-GM-GEN3/; source ubnt-devel-aircam" C-m
-tmux send-keys          -t Main:5 "cd ${ROOT}/AIRCAM-GM-GEN3/; source ubnt-devel-aircam" C-m
+tmux send-keys          -t Main:2 "cd ${ROOT}/aircam-gm-gen2/; source ubnt-devel-aircam" C-m
+tmux send-keys          -t Main:3 "cd ${ROOT}/aircam-gm-gen2/; source ubnt-devel-aircam" C-m
+tmux send-keys          -t Main:4 "cd ${ROOT}/aircam-gm-gen3/; source ubnt-devel-aircam" C-m
+tmux send-keys          -t Main:5 "cd ${ROOT}/aircam-gm-gen3/; source ubnt-devel-aircam" C-m
 tmux send-keys          -t Main:6 "cd ${ROOT}/Issues" C-m
 tmux send-keys          -t Main:7 "cd ${ROOT}/OpenWrt" C-m
 tmux send-keys          -t Main:8 "cd ${ROOT}/VVTK" C-m
@@ -66,11 +66,13 @@ tmux select-window      -t Tunnel:1
 tmux new-session     -d -s SSH
 
 tmux rename-window      -t SSH:1 "ttyUSB0"
-tmux new-window         -t SSH:2
+tmux new-window         -t SSH:2 -n "ttyUSB1"
 tmux new-window         -t SSH:3
 tmux new-window         -t SSH:4
+tmux new-window         -t SSH:5
 
 tmux send-keys          -t SSH:1 "miniterm.py /dev/ttyUSB0 115200" C-m
+tmux send-keys          -t SSH:2 "miniterm.py /dev/ttyUSB1 115200" C-m
 
 # Switch to window 1
 tmux select-window      -t SSH:1
