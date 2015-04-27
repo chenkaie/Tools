@@ -37,8 +37,9 @@ ln -sf builders/make/out_${GEN}_${CONF}/build/root_fs REL-root_fs
 ln -sf builders/make/out_${GEN}_${CONF}/build/artifacts REL-artifacts
 ln -sf builders/make/out_${GEN}_${CONF}/full_target/bin/ REL-sources
 ln -sf openwrt-${GEN}-${CONF} .openwrt
-ln -sf .openwrt/staging_dir/target-*/root-ambarella/ root-ambarella
-ln -sf .openwrt/build_dir/toolchain-*/linux linux
+ln -sf .openwrt/staging_dir/target-*/root-ambarella/ root-ambarella-owrt
+ln -sf .openwrt/build_dir/target-*/root-ambarella/ root-ambarella-ubnt
+ln -sf .openwrt/build_dir/target-*/linux-ambarella/linux-* linux
 ln -sf .openwrt/bin/ambarella/amboot-ambarella/*kernel_lnx_release.bin REL-preload_image.bin
 ln -sf $IMAGEDIR/*bootloader.bin REL-preload_image.bin
 
