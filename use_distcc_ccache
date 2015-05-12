@@ -8,16 +8,21 @@
 #       Set CCACHE_DIR to tmpfs/ramdisk to speed up and reduce journaling filesystem i/o times
 #
 # (2) how to tell a directory is tmpfs by dd tool? (speed difference)
-#     +----------------------------------------------------------------------------+
-#     | kent@rd1-2:~ >>> dd if=/dev/zero of=/dev/shm/testfile bs=8k count=128k     |
-#     | 1073741824 bytes (1.1 GB) copied, 1.34261 seconds, 800 MB/s                |
-#     | kent@rd1-2:~ >>> dd if=/dev/zero of=/tmp/testfile bs=8k count=128k         |
-#     | 1073741824 bytes (1.1 GB) copied, 3.07005 seconds, 350 MB/s                |
-#     +----------------------------------------------------------------------------+
-#
+#     Write:
+#     +--------------------------------------------------------------------------------+
+#     | $ dd if=/dev/zero of=/dev/shm/testfile bs=1M count=1024 conv=fdatasync,notrunc |
+#     | 1073741824 bytes (1.1 GB) copied, 1.34261 seconds, 800 MB/s                    |
+#     | $ dd if=/dev/zero of=/tmp/testfile bs=1M count=1024 conv=fdatasync,notrunc     |
+#     | 1073741824 bytes (1.1 GB) copied, 3.07005 seconds, 350 MB/s                    |
+#     +--------------------------------------------------------------------------------+
+#     Read:
+#     +--------------------------------------------------------------------------------+
+#     | $ echo 3 > /proc/sys/vm/drop_caches                                            |
+#     | $ dd if=/tmp/tempfile of=/dev/null bs=1M count=1024                            |
+#     +--------------------------------------------------------------------------------+
 
 ##########
-# ccache # 
+# ccache #
 ##########
 
 platform=`\which -a arm-linux-gcc 2> /dev/null`
@@ -71,7 +76,7 @@ if [ -d "${CCACHE_DIR}" ]; then
     echo "+----------------------------------------------------+"
     $CCACHE_BIN -s
 else
-    mkdir ${CCACHE_DIR} 
+    mkdir ${CCACHE_DIR}
     chmod 1777 ${CCACHE_DIR}
 
     echo "+----------------------------------------------------+"
@@ -84,7 +89,7 @@ else
 fi
 
 ##########
-# distcc # 
+# distcc #
 ##########
 
 #export DISTCC_HOSTS='localhost 172.16.7.167'
