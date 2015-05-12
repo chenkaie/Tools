@@ -4,6 +4,7 @@
 git rev-parse --show-toplevel > /dev/null 2>&1
 if [ $? -eq 0 ]; then
 	AIRCAMDIR=$(git rev-parse --show-toplevel)
+	pushd $AIRCAMDIR > /dev/null
 else
 	echo "Please run under a aircam-gm git repo!"
 	exit 1
@@ -48,3 +49,5 @@ alias rcd-openwrt='cd ${PRODUCTDIR}/root-ambarella;pwd'
 alias catenv='less ${PRODUCTDIR}/builders/make/env_${GEN}.mk'
 
 #godir openwrt
+
+popd > /dev/null
