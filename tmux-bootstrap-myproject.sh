@@ -67,12 +67,13 @@ tmux new-session     -d -s SSH
 
 tmux rename-window      -t SSH:1 "ttyUSB0"
 tmux new-window         -t SSH:2 -n "ttyUSB1"
-tmux new-window         -t SSH:3
+tmux new-window         -t SSH:3 -n "ttyS0"
 tmux new-window         -t SSH:4
 tmux new-window         -t SSH:5
 
 tmux send-keys          -t SSH:1 "miniterm.py /dev/ttyUSB0 115200" C-m
 tmux send-keys          -t SSH:2 "miniterm.py /dev/ttyUSB1 115200" C-m
+tmux send-keys          -t SSH:3 "miniterm.py /dev/ttyS0 115200" C-m
 
 # Switch to window 1
 tmux select-window      -t SSH:1
