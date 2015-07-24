@@ -55,7 +55,7 @@ tmux new-window         -t Tunnel:3 -n "hfs"
 tmux send-keys          -t Tunnel:1 'cd $tools; ./test.expect' C-m
 tmux send-keys          -t Tunnel:2.top "watch ccache -s" C-m
 tmux send-keys          -t Tunnel:2.bottom "top" C-m
-tmux send-keys          -t Tunnel:3 "cd ${HOME}/ArmTools/UVC; python -m SimpleHTTPServer 8080" C-m
+tmux send-keys          -t Tunnel:3 "cd ${HOME}/ArmTools/UVC; server 8888" C-m
 
 # Switch to window 1
 tmux select-window      -t Tunnel:1
