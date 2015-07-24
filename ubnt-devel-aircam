@@ -31,7 +31,6 @@ echo Last build: GEN=$GEN CONF=$CONF
 export ROOTFSDIR=${PRODUCTDIR}/builders/make/out_${GEN}_${CONF}/build/root_fs
 export IMAGEDIR=${PRODUCTDIR}/builders/make/out_${GEN}_${CONF}/build/artifacts
 export STAGINGDIR=${PRODUCTDIR}/.openwrt/staging_dir
-export TARGETDIR=${PRODUCTDIR}/.openwrt/build_dir/target-arm_*
 
 # Make symlink
 ln -sf builders/make/out_${GEN}_${CONF}/build/root_fs REL-root_fs
@@ -42,10 +41,10 @@ ln -sf .openwrt/staging_dir/target-*/root-ambarella/ root-ambarella-owrt
 ln -sf .openwrt/build_dir/target-*/root-ambarella/ root-ambarella-ubnt
 ln -sf .openwrt/build_dir/target-*/linux-ambarella/linux-* linux
 ln -sf .openwrt/bin/ambarella/amboot-ambarella/*kernel_lnx_release.bin REL-preload_image.bin
+ln -sf .openwrt/build_dir/target-arm-* target
 ln -sf $IMAGEDIR/*bootloader.bin REL-preload_image.bin
 
 alias rcd='cd ${PRODUCTDIR}/builders/make/out_${GEN}_${CONF}/build;pwd'
-alias rcd-openwrt='cd ${PRODUCTDIR}/root-ambarella;pwd'
 alias catenv='less ${PRODUCTDIR}/builders/make/env_${GEN}.mk'
 
 #godir openwrt
