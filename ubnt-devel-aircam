@@ -32,21 +32,23 @@ export ROOTFSDIR=${PRODUCTDIR}/builders/make/out_${GEN}_${CONF}/build/root_fs
 export IMAGEDIR=${PRODUCTDIR}/builders/make/out_${GEN}_${CONF}/build/artifacts
 export STAGINGDIR=${PRODUCTDIR}/.openwrt/staging_dir
 
-# Make symlink
-ln -sf builders/make/out_${GEN}_${CONF}/build/root_fs REL-root_fs
-ln -sf builders/make/out_${GEN}_${CONF}/build/artifacts REL-artifacts
-ln -sf builders/make/out_${GEN}_${CONF}/full_target/bin/ REL-sources
+# Make symlink                                              # symlink name
+ln -sf builders/make/out_${GEN}_${CONF}/build/root_fs/      rel-root_fs
+ln -sf builders/make/out_${GEN}_${CONF}/build/artifacts/    rel-artifacts
+ln -sf builders/make/out_${GEN}_${CONF}/full_target/bin/    rel-sources
+
 ln -sf openwrt-${GEN}-${CONF} .openwrt
-ln -sf .openwrt/staging_dir/target-*/root-ambarella/ root-ambarella-owrt
-ln -sf .openwrt/build_dir/target-*/root-ambarella/ root-ambarella-ubnt
-ln -sf .openwrt/build_dir/target-*/linux-ambarella/linux-* linux
-ln -sf .openwrt/bin/ambarella/amboot-ambarella/*kernel_lnx_release.bin REL-preload_image.bin
-ln -sf .openwrt/build_dir/target-arm-* target
-ln -sf $IMAGEDIR/*bootloader.bin REL-preload_image.bin
+ln -sf .openwrt/staging_dir/target-*/root-ambarella/        root-ambarella-owrt
+ln -sf .openwrt/build_dir/target-*/root-ambarella/          root-ambarella-ubnt
+ln -sf .openwrt/build_dir/target-*/linux-ambarella/linux-*  linux
+ln -sf .openwrt/build_dir/target-arm-*                      target
+
+ln -sf $IMAGEDIR/*bootloader.bin                            rel-preload_image.bin
+ln -sf $IMAGEDIR/*[^bootloader].bin                         rel-firmware.bin
 
 alias rcd='cd ${PRODUCTDIR}/builders/make/out_${GEN}_${CONF}/build;pwd'
 alias catenv='less ${PRODUCTDIR}/builders/make/env_${GEN}.mk'
 
-#godir openwrt
+#godir PATTERN
 
 popd > /dev/null
