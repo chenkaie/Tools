@@ -8,7 +8,7 @@
 # Uncomment below line for debug purpose
 #echo "$@" >> /tmp/makelog
 case "$@" in
-	*menuconfig*|*firmware*|*sample*|doctor|release|*linux*|*oldconfig*)
+	*menuconfig*|*firmware*|*sample*|doctor|release|*linux*|*oldconfig*|*preload*)
 		make $@
 		;;
 	*)
