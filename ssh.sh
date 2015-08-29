@@ -19,14 +19,14 @@ SERVER="$1"
 
 # Put .bashrc for busybox file on remote server
 BASHRC_BB=".bashrc_bb_u"
-sshpass -p $PASSWORD scp `dirname $0`/$BASHRC_BB $USERNAME@$SERVER:
+sshpass -p $PASSWORD scp `dirname $0`/$BASHRC_BB $USERNAME@$SERVER:/tmp/
 
 expect -c "
 set timeout 3
 spawn sshpass -p $PASSWORD ssh $USERNAME@$SERVER
 
 send \"FROM_ID='`whoami`'\r\"
-send \"source /etc/persistent/$BASHRC_BB\r\"
+send \"source /tmp/$BASHRC_BB\r\"
 
 interact timeout 60 { send -null }
 "
