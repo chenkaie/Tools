@@ -33,14 +33,14 @@ export IMAGEDIR=${PRODUCTDIR}/builders/make/out_${GEN}_${CONF}/build/artifacts
 export STAGINGDIR=${PRODUCTDIR}/.openwrt/staging_dir
 
 # Make symlink                                              # symlink name
-ln -sf builders/make/out_${GEN}_${CONF}/build/root_fs/      rel-root_fs
+ln -sf builders/make/out_${GEN}_${CONF}/build/root_fs/      rel-rootfs
 ln -sf builders/make/out_${GEN}_${CONF}/build/artifacts/    rel-artifacts
 ln -sf builders/make/out_${GEN}_${CONF}/full_target/bin/    rel-sources
 
 ln -sf openwrt-${GEN}-${CONF} .openwrt
-ln -sf .openwrt/staging_dir/target-*/root-ambarella/        root-ambarella-owrt
-ln -sf .openwrt/build_dir/target-*/root-ambarella/          root-ambarella-ubnt
-ln -sf .openwrt/build_dir/target-*/linux-ambarella/linux-*  linux
+ln -sf .openwrt/staging_dir/target-*/root-*/                rootfs-owrt
+ln -sf .openwrt/build_dir/target-*/root-*/                  rootfs-ubnt
+ln -sf .openwrt/build_dir/target-*/linux-*/linux-*          linux
 ln -sf .openwrt/build_dir/target-arm-*                      target
 
 ln -sf $IMAGEDIR/*bootloader.bin                            rel-preload_image.bin
