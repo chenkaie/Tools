@@ -1,11 +1,19 @@
 #!/bin/sh
 # Usage: https://ubiquiti.atlassian.net/wiki/display/AIRVISION/UVC+Micro+Recovery
 
-if [ -z "${PRODUCTDIR}" ]; then
-	echo "Please source environment file first!"
-	exit 1
+if [ $# -lt 1 ]; then
+	echo "Usage: $0 <FW_BIN>"
+	exit 0
 fi
 
-FW_BIN=$(ls $IMAGEDIR/*[^bootloader].bin)
+FW_BIN="$1"
+
+if [ "$FW_BIN" = "-" ]; then
+	source ubnt-devel-aircam
+	FW_BIN=$(ls $IMAGEDIR/*[^bootloader].bin)
+fi
+
+echo "Firmware name: `basename $FW_BIN`"
+
 sudo dd if=$FW_BIN of=/dev/sdd bs=8M
 sync
