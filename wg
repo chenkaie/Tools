@@ -32,7 +32,7 @@ function _ag()
 			;;
 	esac
 
-	ag --smart-case --nocolor --nogroup --skip-vcs-ignores "$pattern" | $_strings | sort | nl -n ln | grep -P -Ii --colour=auto "$pattern"
+	ag --smart-case --nocolor --nogroup --skip-vcs-ignores --hidden "$pattern" | $_strings | sort | nl -n ln | grep -P -Ii --colour=auto "$pattern"
 	return 0;
 }
 
