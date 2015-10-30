@@ -3,5 +3,5 @@
 if [ "$1" = "-M" ] || [ "$1" = "-m" ] ; then
     git status | grep modified | awk '{print $2}'
 else
-    git status
+    git status $@
 fi
