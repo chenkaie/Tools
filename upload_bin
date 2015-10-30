@@ -9,11 +9,17 @@ DEVICE_IP="$1"
 FW_BIN="$2"
 
 if [ "$FW_BIN" = "-" ]; then
-	source ubnt-devel-aircam
-	FW_BIN=$(ls $IMAGEDIR/*[^bootloader].bin)
+	. ubnt-devel-aircam
+	FW_BIN=$(ls "$IMAGEDIR"/*[^bootloader].bin)
 fi
 
-echo "Firmware name: `basename $FW_BIN`"
+echo Firmware name: "$(basename "$FW_BIN")"
 
-sshpass -p ubnt scp $FW_BIN ubnt@$DEVICE_IP:/tmp/fwupdate.bin
-[ $? -eq 0 ] && sshpass -p ubnt ssh ubnt@$DEVICE_IP /usr/bin/fwupdate -m || echo "FW upload fail!"
+KEY="$HOME/.ssh/id_rsa_ubnt"
+if [ ! -e "$KEY" ]; then
+	ssh-keygen -t rsa -N "" -f "$KEY"
+fi
+
+sshpass -p ubnt ssh-copy-id -i "$KEY".pub ubnt@"$DEVICE_IP" >/dev/null 2>&1
+scp -i "$KEY" "$FW_BIN" ubnt@"$DEVICE_IP":/tmp/fwupdate.bin
+[ $? -eq 0 ] && ssh -i "$KEY" ubnt@"$DEVICE_IP" /usr/bin/fwupdate -m || echo "FW upload fail!"
