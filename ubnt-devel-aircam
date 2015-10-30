@@ -4,13 +4,13 @@
 git rev-parse --show-toplevel > /dev/null 2>&1
 if [ $? -eq 0 ]; then
 	AIRCAMDIR=$(git rev-parse --show-toplevel)
-	pushd $AIRCAMDIR > /dev/null
+	pushd "$AIRCAMDIR" > /dev/null
 else
 	echo "Please run under a aircam-gm git repo!"
 	exit 1
 fi
 
-export PRODUCTDIR=$AIRCAMDIR
+export PRODUCTDIR="$AIRCAMDIR"
 
 # For Openwrt build system (refer to Openwrt/Makefile)
 # Export below variable, you can make any package w/o typing annyoing long string
@@ -22,32 +22,25 @@ export TOPDIR=${PRODUCTDIR}/.openwrt
 export INCLUDE_DIR=${TOPDIR}/include
 
 # Fetch $GEN=[genXF] and $CONF=[rel|dbg], read from last built
-source $AIRCAMDIR/.marker-make-target
-export GEN=$GEN
-export CONF=$CONF
-echo Last build: GEN=$GEN CONF=$CONF
+MAKE_TARGET=$(ls -t .marker-*_openwrt | head -n1)
+export GEN=$(echo "$MAKE_TARGET" | cut -d '_' -f 1 | cut -d '-' -f 2)
+export CONF=$(echo "$MAKE_TARGET" | cut -d '_' -f 1 | cut -d '-' -f 3)
+echo Last build: GEN="$GEN" CONF="$CONF"
 
 # export some useful env var
-export ROOTFSDIR=${PRODUCTDIR}/builders/make/out_${GEN}_${CONF}/build/root_fs
-export IMAGEDIR=${PRODUCTDIR}/builders/make/out_${GEN}_${CONF}/build/artifacts
+export IMAGEDIR=${PRODUCTDIR}/.openwrt/artifacts
 export STAGINGDIR=${PRODUCTDIR}/.openwrt/staging_dir
 
 # Make symlink                                              # symlink name
-ln -sf builders/make/out_${GEN}_${CONF}/build/root_fs/      rel-rootfs
-ln -sf builders/make/out_${GEN}_${CONF}/build/artifacts/    rel-artifacts
-ln -sf builders/make/out_${GEN}_${CONF}/full_target/bin/    rel-sources
-
-ln -sf openwrt-${GEN}-${CONF} .openwrt
+ln -sf openwrt-"${GEN}"-"${CONF}" .openwrt
+ln -sf .openwrt/artifacts                                   rel-artifacts
 ln -sf .openwrt/staging_dir/target-*/root-*/                rootfs-owrt
 ln -sf .openwrt/build_dir/target-*/root-*/                  rootfs-ubnt
 ln -sf .openwrt/build_dir/target-*/linux-*/linux-*          linux
 ln -sf .openwrt/build_dir/target-arm-*                      target
 
-ln -sf $IMAGEDIR/*bootloader.bin                            rel-preload_image.bin
-ln -sf $IMAGEDIR/*[^bootloader].bin                         rel-firmware.bin
-
-alias rcd='cd ${PRODUCTDIR}/builders/make/out_${GEN}_${CONF}/build;pwd'
-alias catenv='less ${PRODUCTDIR}/builders/make/env_${GEN}.mk'
+ln -sf .openwrt/artifacts/*bootloader.bin                            rel-preload_image.bin
+ln -sf .openwrt/artifacts/*[^bootloader].bin                         rel-firmware.bin
 
 #godir PATTERN
 
