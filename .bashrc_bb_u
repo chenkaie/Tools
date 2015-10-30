@@ -1,7 +1,7 @@
 #!/bin/sh
 # This .bashrc_bb is useful for busybox environment
 
-BASHRC_FILENAME=".bashrc_bb_u"
+BASHRC_FILENAME="/tmp/.bashrc_bb_u"
 
 #######################
 # Alias               #
@@ -78,9 +78,7 @@ mt ()
 	RWDIR=$1
 	TMPDIR=`mktemp -d -p /tmp/`
 	cp -a $RWDIR/* $TMPDIR
-	mount -t tmpfs -o size=100M tmpfs $RWDIR
-	cp -a $TMPDIR/* $RWDIR/
-	rm -rf $TMPDIR
+	mount -o bind $TMPDIR $RWDIR
 }
 
 dbgtools ()
@@ -91,16 +89,18 @@ dbgtools ()
 	fi
 
 	local GEN=$1
-	cd $HOME
-	for tool in busybox strace gdb lsof tmux .tmux_uart.conf libreadline.so.6 libncurses.so.5; do
-		rm $tool >/dev/null 2>&1
-		wget http://$DEV_SERVER:8080/gen$GEN/$tool
-		chmod +x $tool
+	local DBG_DIR=/tmp/dbgtools
+
+	mkdir -p $DBG_DIR
+	for tool in busybox strace gdb lsof tmux .tmux_uart.conf libreadline.so.6 libncurses.so.5 librpc.so; do
+		wget http://$DEV_SERVER:8888/gen$GEN/$tool -P $DBG_DIR
+		chmod +x $DBG_DIR/$tool
 	done
-	export PATH=/etc/persistent/:$PATH
+	export PATH=$DBG_DIR:$PATH
+	export LD_LIBRARY_PATH=/tmp/dbgtools/
 
 	# Creating busybox symlinks
-	mkdir bin_bb; cd bin_bb
+	mkdir $DBG_DIR/bin_bb; cd $DBG_DIR/bin_bb
 	busybox --help | busybox grep 'Currently defined functions:' -A300 \
 	               | busybox grep -v 'Currently defined functions:' \
 				   | busybox tr , '\n' \
@@ -111,7 +111,7 @@ dbgtools ()
 	# Fancy colorful prompt support
 	mv /etc/profile /etc/profile.ori
 	cp $BASHRC_FILENAME /etc/profile
-	busybox sh --login
+	busybox ash -l
 }
 
 bwps1 ()
@@ -197,7 +197,7 @@ FW_VER_SHORT=`echo $FW_VER | sed 's/\(.*\)\.v\(.*\)\.......\...../v\2/'`
 MODELNAME=`sed -n "/board.name=\(.*\)/{s//\1/p;q}" /etc/board.info`
 PS1=${TXTGRN}"[${MODELNAME}.${FW_VER_SHORT}]"${TXTRST}'@'${TXTPUR}${IP_HERE_SHORT}${TXTRST}':\w \$ '
 
-DEV_SERVER="10.2.0.169"
+DEV_SERVER="10.2.0.218"
 alias mount-home="mkdir /home; mount -t nfs -o tcp,nolock $DEV_SERVER:/home /home"
 alias mount-rw="mount -t ubifs -o rw,remount ubi0:rootfs /"
 
