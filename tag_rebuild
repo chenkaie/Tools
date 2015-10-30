@@ -46,3 +46,6 @@ $CTAGS_PRG -R --c-kinds=+p --fields=+ialS --extra=+q --exclude=*jquery*
 #$CTAGS_PRG -R --c++-kinds=+p+l+x+c+d+e+f+g+m+n+s+t+u+v --fields=+liaS --extra=+q --language-force=c++ --exclude=*jquery*
 
 [ -n "$CSCOPE_TAG_PATH" ] && cp cscope.* tags $CSCOPE_TAG_PATH || echo "Done!"
+
+# GNU GLOBAL (gtags) treats *.h files as a C source file, treat them as a C++ source file also by set GTAGSFORCECPP
+GTAGSLABEL='ctags' GTAGSFORCECPP=1 gtags
