@@ -28,16 +28,16 @@ tmux new-window         -t Main:10 -n "mbpr"
 
 # Send commands to the windows, use "C-m" to emulate "enter"
 
-tmux send-keys          -t Main:1 "cd ${ROOT}/aircam-gm/;      source ubnt-devel-aircam" C-m
-tmux send-keys          -t Main:2 "cd ${ROOT}/aircam-gm-gen2/; source ubnt-devel-aircam" C-m
-tmux send-keys          -t Main:3 "cd ${ROOT}/aircam-gm-gen2/; source ubnt-devel-aircam" C-m
-tmux send-keys          -t Main:4 "cd ${ROOT}/aircam-gm-gen3/; source ubnt-devel-aircam" C-m
-tmux send-keys          -t Main:5 "cd ${ROOT}/aircam-gm-gen3/; source ubnt-devel-aircam" C-m
+tmux send-keys          -t Main:1 "cd ${ROOT}/unifi-video-firmware/;      source ubnt-devel-aircam" C-m
+tmux send-keys          -t Main:2 "cd ${ROOT}/unifi-video-firmware-gen2/; source ubnt-devel-aircam" C-m
+tmux send-keys          -t Main:3 "cd ${ROOT}/unifi-video-firmware-gen2/; source ubnt-devel-aircam" C-m
+tmux send-keys          -t Main:4 "cd ${ROOT}/unifi-video-firmware-gen3/; source ubnt-devel-aircam" C-m
+tmux send-keys          -t Main:5 "cd ${ROOT}/unifi-video-firmware-gen3/; source ubnt-devel-aircam" C-m
 tmux send-keys          -t Main:6 "cd ${ROOT}/Issues" C-m
 tmux send-keys          -t Main:7 "cd ${ROOT}/OpenWrt" C-m
 tmux send-keys          -t Main:8 "cd ${ROOT}/VVTK" C-m
 tmux send-keys          -t Main:9 "avahi-browse-domains -a -v -r" C-m
-tmux send-keys          -t Main:10 "ssh kentmbpr-ubnt.local" C-m
+tmux send-keys          -t Main:10 "ssh kent-mbpr-ubnt.local" C-m
 
 # Switch to window 1
 tmux select-window      -t Main:1
@@ -51,11 +51,13 @@ tmux rename-window      -t Tunnel:1 "ddwrt"
 tmux new-window         -t Tunnel:2
 tmux split-window    -v -t Tunnel:2
 tmux new-window         -t Tunnel:3 -n "hfs"
+tmux new-window         -t Tunnel:4 -n "dropbox"
 
 tmux send-keys          -t Tunnel:1 'cd $tools; ./test.expect' C-m
 tmux send-keys          -t Tunnel:2.top "watch ccache -s" C-m
 tmux send-keys          -t Tunnel:2.bottom "top" C-m
 tmux send-keys          -t Tunnel:3 "cd ${HOME}/ArmTools/UVC; server 8888" C-m
+tmux send-keys          -t Tunnel:4 "dropboxd.py start" C-m
 
 # Switch to window 1
 tmux select-window      -t Tunnel:1
