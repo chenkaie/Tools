@@ -65,7 +65,7 @@ if [ -n "$INDEX" ]; then
 
 	if [ "$INDEX" == "a" ]; then
 		#FIXME: Why "tr" executed before "cut" in this statement FILENAME=`echo $result | cut -d ":" -f 1 | tr '\n' '@' | sed 's/@/ /g'
-		FILENAME=`echo $result | awk '{print $2}' | cut -d ":" -f 1 | uniq`
+		FILENAME=`echo $result | awk '{print $2}' | cut -d ":" -f 1 | sort | uniq`
 		FILENAME1=`echo $FILENAME | tr '\n' '@' | sed 's/@/ /g'`
 		LINENUMBER=`echo $result | sed -n "1p" | awk '{print $2}' |  cut -d ":" -f 2`
 		$EDITOR -X -p $FILENAME1 -c "silent! /$pattern" +$LINENUMBER
