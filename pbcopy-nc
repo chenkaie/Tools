@@ -4,17 +4,19 @@
 # Recommended using together with "Clipboard Listener (Java)"
 # Ref: http://www.hanhuy.com/pfn/integrating_screen_and_clipboard
 
-REMOTE="kentmbpr-ubnt.local"
+REMOTE="kent-mbpr-ubnt.local"
 
 if [ -z "$1" ]; then
 	# Read content from STDIN, a super cool and ELEGANT way
 	# $(cat) is a shorthand for $(cat /dev/stdin)
     # So you can use this to read from STDERR by $(cat /dev/stderr)
 	STDINVAL=$(cat)
-	echo "$STDINVAL" | nc ${REMOTE} 4573
 
 	# If under tmux, also set content into paste buffer
 	[ -n "$TMUX" ] && tmux set-buffer "$STDINVAL"
+
+	# Send to remote clipboard listener
+	echo "$STDINVAL" | nc ${REMOTE} 4573 -w 1 &
 else
 	# Read content from $1: file path
 	nc ${REMOTE} 4573 < $1
