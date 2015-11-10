@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Usage: execute `source ubnt-devel-aircam` under top level folder of aircam-gm
 
 git rev-parse --show-toplevel > /dev/null 2>&1
@@ -21,6 +21,9 @@ export PRODUCTDIR="$AIRCAMDIR"
 export TOPDIR=${PRODUCTDIR}/.openwrt
 export INCLUDE_DIR=${TOPDIR}/include
 
+# For packages which supports parallel build (PKG_BUILD_PARALLEL:=1)
+export PKG_JOBS="-j$(grep processor /proc/cpuinfo | wc -l)"
+
 # Fetch $GEN=[genXF] and $CONF=[rel|dbg], read from last built
 MAKE_TARGET=$(ls -t .marker-*_openwrt | head -n1)
 export GEN=$(echo "$MAKE_TARGET" | cut -d '_' -f 1 | cut -d '-' -f 2)
@@ -30,6 +33,7 @@ echo Last build: GEN="$GEN" CONF="$CONF"
 # export some useful env var
 export IMAGEDIR=${PRODUCTDIR}/.openwrt/artifacts
 export STAGINGDIR=${PRODUCTDIR}/.openwrt/staging_dir
+export MWDIR=${PRODUCTDIR}/packages-other/ubnt-middleware/unifi-video-fw-middleware/
 
 # Make symlink                                              # symlink name
 ln -sf openwrt-"${GEN}"-"${CONF}" .openwrt
