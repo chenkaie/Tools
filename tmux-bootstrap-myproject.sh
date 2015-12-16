@@ -52,12 +52,21 @@ tmux new-window         -t Tunnel:2
 tmux split-window    -v -t Tunnel:2
 tmux new-window         -t Tunnel:3 -n "hfs"
 tmux new-window         -t Tunnel:4 -n "dropbox"
+tmux new-window         -t Tunnel:5 -n "iperf"
+tmux split-window    -h -t Tunnel:5
+tmux new-window         -t Tunnel:6
+tmux split-window    -v -t Tunnel:6
 
 tmux send-keys          -t Tunnel:1 'cd $tools; ./test.expect' C-m
 tmux send-keys          -t Tunnel:2.top "watch ccache -s" C-m
-tmux send-keys          -t Tunnel:2.bottom "top" C-m
+tmux send-keys          -t Tunnel:2.top "sudo atop" C-m
+tmux send-keys          -t Tunnel:2.bottom "htop -d 10" C-m
 tmux send-keys          -t Tunnel:3 "cd ${HOME}/ArmTools/UVC; server 8888" C-m
 tmux send-keys          -t Tunnel:4 "dropboxd.py start" C-m
+tmux send-keys          -t Tunnel:5.left "iperf -s -i1 -m -fk" C-m
+tmux send-keys          -t Tunnel:5.right "iperf -s -u -i1 -m -fk" C-m
+tmux send-keys          -t Tunnel:6.top "dstat -cdlmnpsy --top-cpu --top-bio --top-mem --top-latency" C-m
+tmux send-keys          -t Tunnel:6.bottom "sudo atop" C-m
 
 # Switch to window 1
 tmux select-window      -t Tunnel:1
