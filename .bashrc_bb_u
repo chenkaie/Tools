@@ -114,11 +114,6 @@ dbgtools ()
 	busybox ash -l
 }
 
-bwps1 ()
-{
-	PS1=[${MODELNAME}.${FW_VER_SHORT}]'@'${IP_HERE_SHORT}' # '
-}
-
 mtubifs ()
 {
 	mknod /dev/ubi_ctrl c 10 63
@@ -185,17 +180,21 @@ echo "=================================="
 #######################
 # IP Camera           #
 #######################
-
-# Readable PS1
-TXTGRN="\[\033[0;32m\]"
-TXTPUR="\[\033[0;35m\]"
-TXTRST="\[\033[0m\]"
-
 IP_HERE_SHORT=${IP_HERE#10.2.}
 FW_VER=`cat /lib/version`
-FW_VER_SHORT=`echo $FW_VER | sed 's/\(.*\)\.v\(.*\)\.......\...../v\2/'`
+FW_VER_SHORT=`echo $FW_VER | sed 's/\(.*\)\.v\(.*\)/v\2/'`
 MODELNAME=`sed -n "/board.name=\(.*\)/{s//\1/p;q}" /etc/board.info`
-PS1=${TXTGRN}"[${MODELNAME}.${FW_VER_SHORT}]"${TXTRST}'@'${TXTPUR}${IP_HERE_SHORT}${TXTRST}':\w \$ '
+
+cat /lib/version  | grep debug
+if [ $? -eq 0 ]; then
+	# Colorful PS1
+	TXTGRN="\[\033[0;32m\]"
+	TXTPUR="\[\033[0;35m\]"
+	TXTRST="\[\033[0m\]"
+	PS1=${TXTGRN}"[${MODELNAME}.${FW_VER_SHORT}]"${TXTRST}'@'${TXTPUR}${IP_HERE_SHORT}${TXTRST}':\w \$ '
+else 
+	PS1=[${MODELNAME}.${FW_VER_SHORT}]'@'${IP_HERE}' # '
+fi
 
 DEV_SERVER="10.2.0.218"
 alias mount-home="mkdir /home; mount -t nfs -o tcp,nolock $DEV_SERVER:/home /home"
