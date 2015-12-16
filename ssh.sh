@@ -28,7 +28,7 @@ spawn sshpass -p $PASSWORD ssh $USERNAME@$SERVER
 send \"FROM_ID='`whoami`'\r\"
 send \"source /tmp/$BASHRC_BB\r\"
 
-interact timeout 60 { send -null }
+interact timeout 60 { }
 "
 
 # FIXME: It's weird/buggy to rewrite as below well-known form
