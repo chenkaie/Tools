@@ -4,7 +4,7 @@
 
 usage()
 {
-  echo "usage: $(basename "$0") [mount | umount]"
+	echo "usage: $(basename "$0") <mount | umount> <path-to-ubi-image> <gen>"
 }
 
 mount_ubi()
@@ -18,7 +18,7 @@ mount_ubi()
 		sudo mkdir /mnt/ubi > /dev/null 2>&1
 	fi
 
-	sudo dd if=$IMAGEDIR/../fw/root.ubi of=/dev/mtdblock0
+	sudo dd if=$UBI_IMAGE of=/dev/mtdblock0
 
 	# Why does ubiattach on a freshly formatted device fail with "Invalid argument"?
 	# http://www.linux-mtd.infradead.org/faq/ubi.html#L_vid_offset_mismatch
@@ -52,12 +52,10 @@ umount_ubi()
 	fi
 }
 
-[ $# -le 1 ] || { usage; exit 1; }
+[ $# -lt 3 ] && { usage; exit 1; }
 
-if [ -z "${PRODUCTDIR}" ]; then
-	echo "Please source environment file first!"
-	exit 1
-fi
+UBI_IMAGE="$2"
+GEN="$3"
 
 case "$1" in
 	"mount")    mount_ubi  ;;
