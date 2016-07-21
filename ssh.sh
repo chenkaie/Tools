@@ -8,13 +8,14 @@
 #   UserKnownHostsFile /dev/null
 
 if [ $# -lt 1 ]; then
-	echo "Usage: $0 <device ip> <user> <pass>"
+	echo "Usage: $0 <device ip> <user> <pass> <args>"
 	exit
 fi
 
 SERVER="$1"
 [ -n "$2" ] && USERNAME="$2" || USERNAME="ubnt"
 [ -n "$3" ] && PASSWORD="$3" || PASSWORD="ubnt"
+[ -n "$4" ] && ARGS="$4"
 
 
 # Put .bashrc for busybox file on remote server
@@ -27,6 +28,8 @@ spawn sshpass -p $PASSWORD ssh $USERNAME@$SERVER
 
 send \"FROM_ID='`whoami`'\r\"
 send \"source /tmp/$BASHRC_BB\r\"
+
+send \"$ARGS\r\"
 
 interact timeout 60 { }
 "
