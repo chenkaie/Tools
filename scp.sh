@@ -7,4 +7,4 @@ fi
 
 DEVICE_IP="$1"
 
-sshpass -p ${SCP_USER:-ubnt} scp -r ${@:2} ${SCP_PASS:-ubnt}@$DEVICE_IP:/tmp/
+sshpass -p ${SCP_PASS:-ubnt} scp -r ${@:2} ${SCP_USER:-ubnt}@$DEVICE_IP:/tmp/
