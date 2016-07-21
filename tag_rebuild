@@ -36,7 +36,7 @@ CTAGS_PRG=ctags
 echo "Cscope ... " $WORK_PATH
 # To avoid using wrong cscope(/opt/montavista/pro5.0/bin/cscope) once sourcing devel_IP8161_VVTK
 [ -f $HOME/usr/bin/cscope ] && CSCOPE_PRG="$HOME/usr/bin/cscope"
-find . -name "*.h" -o -name "*.c" -o -name "*.cc" -o -name "*.cpp" > cscope.files
+find . -name "*.h" -o -name "*.c" -o -name "*.cc" -o -name "*.cpp"  -o -name "*.inc"> cscope.files
 $CSCOPE_PRG -bkqR -i cscope.files
 
 echo "Ctags ... " $WORK_PATH
