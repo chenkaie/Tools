@@ -83,12 +83,13 @@ tmux new-session     -d -s SSH
 tmux rename-window      -t SSH:1 "ttyUSB0"
 tmux new-window         -t SSH:2 -n "ttyUSB1"
 tmux new-window         -t SSH:3 -n "ttyS0"
-tmux new-window         -t SSH:4
+tmux new-window         -t SSH:4 -n "PowerEdge"
 tmux new-window         -t SSH:5
 
-tmux send-keys          -t SSH:1 "miniterm.py --lf /dev/ttyUSB0 115200" C-m
-tmux send-keys          -t SSH:2 "miniterm.py --lf /dev/ttyUSB1 115200" C-m
-tmux send-keys          -t SSH:3 "miniterm.py --lf /dev/ttyACM0 115200" C-m
+tmux send-keys          -t SSH:1 "minicom -b 115200 -8 -D /dev/ttyUSB0" C-m
+tmux send-keys          -t SSH:2 "miniterm.py --eol LF --raw /dev/ttyUSB1 115200" C-m
+tmux send-keys          -t SSH:3 "miniterm.py --eol LF --raw /dev/ttyACM0 115200" C-m
+tmux send-keys          -t SSH:4 "ssh unifivideo@10.2.0.125" C-m
 
 # Switch to window 1
 tmux select-window      -t SSH:1
