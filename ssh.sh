@@ -17,6 +17,8 @@ SERVER="$1"
 [ -n "$3" ] && PASSWORD="$3" || PASSWORD="ubnt"
 [ -n "$4" ] && ARGS="$4"
 
+echo "Waiting for device to go online"
+until nc -vzw 2 $SERVER 22 2>/dev/null; do sleep 2; done
 
 # Put .bashrc for busybox file on remote server
 BASHRC_BB=".bashrc_bb_u"
