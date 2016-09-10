@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 #-i: ignore-case
 #--colour=auto: Surround the matching string with the marker find in GREP_COLOR environment variable (RECMOMMENDED)
