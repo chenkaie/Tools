@@ -22,11 +22,12 @@ until nc -vzw 2 $SERVER 22 2>/dev/null; do sleep 2; done
 
 # Put .bashrc for busybox file on remote server
 BASHRC_BB=".bashrc_bb_u"
-sshpass -p $PASSWORD scp `dirname $0`/$BASHRC_BB $USERNAME@$SERVER:/tmp/
+SSH_OPTION_IGNORE_CHECK="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+sshpass -p $PASSWORD scp $SSH_OPTION_IGNORE_CHECK `dirname $0`/$BASHRC_BB $USERNAME@$SERVER:/tmp/
 
 expect -c "
 set timeout 3
-spawn sshpass -p $PASSWORD ssh $USERNAME@$SERVER
+spawn sshpass -p $PASSWORD ssh $SSH_OPTION_IGNORE_CHECK $USERNAME@$SERVER
 
 send \"FROM_ID='`whoami`'\r\"
 send \"source /tmp/$BASHRC_BB\r\"

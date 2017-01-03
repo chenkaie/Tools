@@ -7,4 +7,6 @@ fi
 
 DEVICE_IP="$1"
 
-sshpass -p ${SCP_PASS:-ubnt} scp -r ${@:2} ${SCP_USER:-ubnt}@$DEVICE_IP:/tmp/
+SSH_OPTION_IGNORE_CHECK="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
+sshpass -p ${SCP_PASS:-ubnt} scp $IGNORE_CHECK -r ${@:2} ${SCP_USER:-ubnt}@$DEVICE_IP:/tmp/

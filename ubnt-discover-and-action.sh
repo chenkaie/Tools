@@ -13,6 +13,8 @@ if [ $# -lt 1 ]; then
 	exit 0
 fi
 
+SSH_OPTION_IGNORE_CHECK="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
 tmpdir=$(mktemp -d)
 devicelist="${tmpdir}/ubnt_device_list.json"
 
@@ -27,7 +29,7 @@ for i in $(cat "${tmpdir}/uvc_list.json" | awk '{print $1}'); do
 	echo IP: $camip
 	echo FW: $fwversion
 	
-	sshpass -p ${SCP_PASS:-ubnt} ssh ${SCP_USER:-ubnt}@$camip "$1"
+	sshpass -p ${SCP_PASS:-ubnt} ssh $SSH_OPTION_IGNORE_CHECK ${SCP_USER:-ubnt}@$camip "$1"
 	echo ========================================================================
 done
 

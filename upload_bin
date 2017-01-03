@@ -20,6 +20,8 @@ if [ ! -e "$KEY" ]; then
 	ssh-keygen -t rsa -N "" -f "$KEY"
 fi
 
-sshpass -p ubnt ssh-copy-id -i "$KEY".pub ubnt@"$DEVICE_IP" >/dev/null 2>&1
-scp -i "$KEY" "$FW_BIN" ubnt@"$DEVICE_IP":/tmp/fwupdate.bin
-[ $? -eq 0 ] && ssh -i "$KEY" ubnt@"$DEVICE_IP" /usr/bin/fwupdate -m || echo "FW upload fail!"
+SSH_OPTION_IGNORE_CHECK="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
+sshpass -p ubnt ssh-copy-id $SSH_OPTION_IGNORE_CHECK -i "$KEY".pub ubnt@"$DEVICE_IP" >/dev/null 2>&1
+scp $SSH_OPTION_IGNORE_CHECK -i "$KEY" "$FW_BIN" ubnt@"$DEVICE_IP":/tmp/fwupdate.bin
+[ $? -eq 0 ] && ssh $SSH_OPTION_IGNORE_CHECK -i "$KEY" ubnt@"$DEVICE_IP" /usr/bin/fwupdate -m || echo "FW upload fail!"
