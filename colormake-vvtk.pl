@@ -103,6 +103,11 @@ while (<>)
 		$thisline =~ s/(\d+:\s+)/$1$col_default$col_error/;
 		$thisline = $error_highlight . $thisline . $col_norm;
     }
+	elsif ($thisline =~ /undefined /)
+    {
+		$thisline =~ s/(\d+:\s+)/$1$col_default$col_error/;
+		$thisline = $error_highlight . $thisline . $col_norm;
+    }
 #	elsif ($in eq 'gcc' or $in eq 'Compile')
 #	{
 #		# Do interesting things if make is compiling something.

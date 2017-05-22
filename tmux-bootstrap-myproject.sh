@@ -60,6 +60,7 @@ tmux new-window         -t Tunnel:5 -n "iperf"
 tmux split-window    -h -t Tunnel:5
 tmux new-window         -t Tunnel:6
 tmux split-window    -v -t Tunnel:6
+tmux new-window         -t Tunnel:7 -n "ddwrt-tunnel"
 
 tmux send-keys          -t Tunnel:1 'cd $TOOLS; ./test.expect' C-m
 tmux send-keys          -t Tunnel:2.top "watch ccache -s" C-m
@@ -71,6 +72,7 @@ tmux send-keys          -t Tunnel:5.left "iperf -s -i1 -m -fk" C-m
 tmux send-keys          -t Tunnel:5.right "iperf -s -u -i1 -m -fk" C-m
 tmux send-keys          -t Tunnel:6.top "dstat -cdlmnpsy --top-cpu --top-bio --top-mem --top-latency" C-m
 tmux send-keys          -t Tunnel:6.bottom "sudo atop" C-m
+tmux send-keys          -t Tunnel:7 "cd $TOOLS; ./test2.expect" C-m
 
 # Switch to window 1
 tmux select-window      -t Tunnel:1
