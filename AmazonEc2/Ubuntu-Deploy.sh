@@ -52,6 +52,7 @@ sudo adduser vivotek
 sudo adduser kent
 sudo adduser kent admin
 sudo adduser kent adm
+sudo adduser kent sudo
 
 mkdir -p $HOME/usr/bin
 REPO_BIN=$HOME/usr/bin/repo

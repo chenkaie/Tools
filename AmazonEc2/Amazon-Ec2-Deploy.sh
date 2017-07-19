@@ -1,35 +1,35 @@
 #!/bin/sh
 # Login by pem: ssh -i natty.pem ubuntu@ec2-50-18-83-73.us-west-1.compute.amazonaws.com
-# 
+#
 # ==========================================================================
 # Samba: \\amazon-ec2.no-ip.org\ubuntu
 # NFS  : mount -t nfs -o tcp,nolock amazon-ec2.no-ip.org:/home /home
-# 
+#
 # Samba:
 #     Path: \\amazon-ec2.no-ip.org\ubuntu
 #     config file: /etc/samba/smb.conf + sudo smbpasswd -a username
-# 
+#
 # ==========================================================================
-# 
+#
 # NFS  :
 #     Path: mount -t nfs -o tcp,nolock amazon-ec2.no-ip.org:/home /home
 #     config file: /etc/exports
-# 
+#
 # ==========================================================================
-# 
+#
 # Change default Ubuntu AMI password
-# 
+#
 # --
 # ubuntu@ip-10-146-13-248:~$ sudo passwd
 # Enter new UNIX password:
 # --
-# 
+#
 # ==========================================================================
-# Amazon Web Services™ are available in several regions. 
+# Amazon Web Services™ are available in several regions.
 # Estimate the latency from your browser to each AWS™ region.
-# 
+#
 # http://www.cloudping.info/
-# 
+#
 # ==========================================================================
 
 
@@ -45,12 +45,12 @@ sudo passwd ubuntu
 
 # 2.
 sudo adduser vivotek
-sudo adduser kent 
+sudo adduser kent
 sudo adduser kent admin
 sudo adduser kent adm
+sudo adduser kent sudo
 
-
-# 3. 
+# 3.
 mkdir $HOME/Repos
 cd $HOME/Repos
 
