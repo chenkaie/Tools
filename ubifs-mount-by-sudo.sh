@@ -52,7 +52,7 @@ umount_ubi()
 	fi
 }
 
-[ $# -lt 3 ] && { usage; exit 1; }
+[ $# -lt 1 ] && { usage; exit 1; }
 
 UBI_IMAGE="$2"
 GEN="$3"
