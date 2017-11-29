@@ -23,8 +23,8 @@ METHOD=2
 
 case $METHOD in
 	1)
-		sshpass -p ubnt scp $SSH_OPTION_IGNORE_CHECK "$FW_BIN" ubnt@"$DEVICE_IP":/tmp/fwupdate.bin
-		sshpass -p ubnt ssh $SSH_OPTION_IGNORE_CHECK ubnt@"$DEVICE_IP" /usr/bin/fwupdate -m || echo "FW upload fail!"
+		sshpass -p ${SCP_PASS:-ubnt} scp $SSH_OPTION_IGNORE_CHECK "$FW_BIN" ubnt@"$DEVICE_IP":/tmp/fwupdate.bin
+		sshpass -p ${SCP_PASS:-ubnt} ssh $SSH_OPTION_IGNORE_CHECK ubnt@"$DEVICE_IP" /usr/bin/fwupdate -m || echo "FW upload fail!"
 		;;
 	2)
 		KEY="$HOME/.ssh/id_rsa_ubnt"
@@ -32,7 +32,7 @@ case $METHOD in
 			ssh-keygen -t rsa -N "" -f "$KEY"
 		fi
 
-		sshpass -p ubnt ssh-copy-id $SSH_OPTION_IGNORE_CHECK -i "$KEY".pub ubnt@"$DEVICE_IP" >/dev/null 2>&1
+		sshpass -p ${SCP_PASS:-ubnt} ssh-copy-id $SSH_OPTION_IGNORE_CHECK -i "$KEY".pub ubnt@"$DEVICE_IP" >/dev/null 2>&1
 		scp $SSH_OPTION_IGNORE_CHECK -i "$KEY" "$FW_BIN" ubnt@"$DEVICE_IP":/tmp/fwupdate.bin
 		[ $? -eq 0 ] && ssh -i "$KEY" ubnt@"$DEVICE_IP" /usr/bin/fwupdate -m || echo "FW upload fail!"
 		;;
