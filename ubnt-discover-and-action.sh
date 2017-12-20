@@ -29,7 +29,7 @@ for i in $(cat "${tmpdir}/uvc_list.json" | awk '{print $1}'); do
 	echo IP: $camip
 	echo FW: $fwversion
 	
-	sshpass -p ${SCP_PASS:-ubnt} ssh $SSH_OPTION_IGNORE_CHECK ${SCP_USER:-ubnt}@$camip "$1"
+	sshpass -p ${SSH_PASS:-ubnt} ssh $SSH_OPTION_IGNORE_CHECK ${SSH_USER:-ubnt}@$camip "$1"
 	echo ========================================================================
 done
 
