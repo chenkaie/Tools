@@ -37,14 +37,15 @@ export MWDIR=${PRODUCTDIR}/packages-other/ubnt-middleware/unifi-video-fw-middlew
 
 # Make symlink                                              # symlink name
 ln -sf openwrt-"${GEN}"-"${CONF}" .openwrt
-ln -sf .openwrt/artifacts                                   rel-artifacts
-ln -sf .openwrt/staging_dir/target-*/root-*/                rootfs-owrt
-ln -sf .openwrt/build_dir/target-*/root-*/                  rootfs-ubnt
-ln -sf .openwrt/build_dir/target-*/linux-*/linux-*          linux
-ln -sf .openwrt/build_dir/target-arm-*                      target
+ln -sf .openwrt/artifacts                               rel-artifacts
+ln -sf .openwrt/staging_dir/target-*/root-*/            rootfs-owrt
+ln -sf .openwrt/build_dir/target-*/root-*/              rootfs-ubnt
+ln -sf .openwrt/build_dir/target-*/linux-*/linux-*      linux
+ln -sf .openwrt/build_dir/target-*                      target
+ln -sf .openwrt/staging_dir/target-*/usr*               installDev
 
-ln -sf .openwrt/artifacts/*bootloader.bin                            rel-preload_image.bin
-ln -sf .openwrt/artifacts/*[^bootloader].bin                         rel-firmware.bin
+ln -sf .openwrt/artifacts/*bootloader.bin               rel-preload_image.bin
+ln -sf .openwrt/artifacts/*[^bootloader].bin            rel-firmware.bin
 
 #godir PATTERN
 
