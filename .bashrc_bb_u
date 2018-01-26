@@ -39,7 +39,7 @@ alias savecfg='cfgmtd -w -f /tmp/system.cfg'
 # Env var             #
 #######################
 
-grep "feature_wifi" /etc/board.info > /dev/null 2>&1
+grep "feature_wifi=1" /etc/board.info > /dev/null 2>&1
 interface=$([ $? -eq 0 ] && echo wlan0 || echo eth0)
 
 IP_HERE=$(ifconfig $interface | sed -n -e 's/:127\.0\.0\.1 //g' -e 's/ *inet addr:\([0-9.]\+\).*/\1/gp')
@@ -191,12 +191,12 @@ if [ $? -eq 0 ]; then
 	TXTGRN="\[\033[0;32m\]"
 	TXTPUR="\[\033[0;35m\]"
 	TXTRST="\[\033[0m\]"
-	PS1=${TXTGRN}"[${MODELNAME}.${FW_VER_SHORT}]"${TXTRST}'@'${TXTPUR}${IP_HERE_SHORT}${TXTRST}':\w \$ '
+	PS1=${TXTGRN}"[${MODELNAME}.${FW_VER_SHORT}]"${TXTRST}'@'${TXTPUR}${IP_HERE}${TXTRST}':\w \$ '
 else 
 	PS1=[${MODELNAME}.${FW_VER_SHORT}]'@'${IP_HERE}' # '
 fi
 
-DEV_SERVER="10.2.0.218"
+DEV_SERVER="10.2.129.43"
 alias mount-home="mkdir /home; mount -t nfs -o tcp,nolock $DEV_SERVER:/home /home"
 alias mount-rw="mount -t ubifs -o rw,remount ubi0:rootfs /"
 
