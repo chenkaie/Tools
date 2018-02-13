@@ -1,0 +1,4 @@
+#!/usr/bin/perl -pl
+# Ref: https://stackoverflow.com/a/1315213/174993
+s/'/'\\''/g;
+$_ = qq['$_'];
