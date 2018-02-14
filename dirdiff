@@ -1,2 +1,2 @@
 #!/bin/sh
-vim -c "DirDiff $1 $2"
+vim -c "set spell" -c "DirDiff $1 $2"
