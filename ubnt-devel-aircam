@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Usage: execute `source ubnt-devel-aircam` under top level folder of aircam-gm
 
 git rev-parse --show-toplevel > /dev/null 2>&1

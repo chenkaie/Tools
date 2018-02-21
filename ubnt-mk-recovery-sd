@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Usage: https://ubiquiti.atlassian.net/wiki/display/AIRVISION/UVC+Micro+Recovery
 
 if [ $# -lt 1 ]; then

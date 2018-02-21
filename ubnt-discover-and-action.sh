@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # A simple way to batch upload camera fw:
 #    $ discover | grep UVC | cut -d ' ' -f 2` > uvc_list.txt
