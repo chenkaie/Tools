@@ -13,7 +13,7 @@ LANPORT="$2"
 echo "===== Disable PoE port: ${LANPORT} at ${IP} ====="
 
 cat > $CMD << EOF
-(echo "enable" ; echo "configure" ; echo "interface 0/$LANPORT" ; echo "poe opmode shutdown"; echo exit; echo exit; echo exit) | telnet localhost 23
+(echo "enable" ; echo "configure" ; echo "interface 0/$LANPORT" ; echo "poe opmode shutdown"; echo exit; echo exit; echo exit) | nc localhost 23
 EOF
 
 sshpass -p $PWD ssh -q $USR@$IP $(cat $CMD)
@@ -24,7 +24,7 @@ sleep 0.5
 echo "===== Enable  PoE port: ${LANPORT} at ${IP} ====="
 
 cat > $CMD << EOF
-(echo "enable" ; echo "configure" ; echo "interface 0/$LANPORT" ; echo "poe opmode auto"; echo exit; echo exit; echo exit) | telnet localhost 23
+(echo "enable" ; echo "configure" ; echo "interface 0/$LANPORT" ; echo "poe opmode auto"; echo exit; echo exit; echo exit) | nc localhost 23
 EOF
 
 sshpass -p $PWD ssh -q $USR@$IP $(cat $CMD)
