@@ -9,4 +9,4 @@ DEVICE_IP="$1"
 
 SSH_OPTION_IGNORE_CHECK="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 
-sshpass -p ${SSH_PASS:-ubnt} scp $IGNORE_CHECK -r ${@:2} ${SSH_USER:-ubnt}@$DEVICE_IP:/tmp/
+sshpass -p ${SSH_PASS:-ubnt} scp -P ${SSH_PORT:-22} $IGNORE_CHECK -r ${@:2} ${SSH_USER:-ubnt}@$DEVICE_IP:/tmp/
