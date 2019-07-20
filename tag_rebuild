@@ -17,8 +17,8 @@ CTAGS_PRG=ctags
 [ -z "$WORK_PATH" ] && WORK_PATH="" || cd $WORK_PATH
 
 echo "cscope ... " $WORK_PATH
-# To avoid using wrong cscope(/opt/montavista/pro5.0/bin/cscope) once sourcing devel_IP8161_VVTK
-find . -name "*.c"    \
+find . -type f \
+	\( -name "*.c"    \
 	-o -name "*.cc"   \
 	-o -name "*.cpp"  \
 	-o -name "*.cxx"  \
@@ -28,16 +28,17 @@ find . -name "*.c"    \
 	-o -name "*.hxx"  \
 	-o -name "*.inc"  \
 	-o -name "*.java" \
+	\) \
 	> cscope.files
 
 cscope -bkqR -i cscope.files
 
 echo "ctags ... " $WORK_PATH
 #ctags -R --fields=+lS
-ctags -R --c-kinds=+p --fields=+ialS --extra=+q --exclude=*jquery*
+ctags -R --c-kinds=+p --fields=+ialS --extra=+q --exclude=*jquery* -L cscope.files
 #ctags -R --c++-kinds=+p+l+x+c+d+e+f+g+m+n+s+t+u+v --fields=+liaS --extra=+q --language-force=c++ --exclude=*jquery*
 
 [ -n "$CSCOPE_TAG_PATH" ] && cp cscope.* tags $CSCOPE_TAG_PATH || echo "Done!"
 
 # GNU GLOBAL (gtags) treats *.h files as a C source file, treat them as a C++ source file also by set GTAGSFORCECPP
-GTAGSLABEL='ctags' GTAGSFORCECPP=0 gtags
+GTAGSLABEL='ctags' GTAGSFORCECPP=0 gtags -f cscope.files

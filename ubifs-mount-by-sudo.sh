@@ -4,7 +4,7 @@
 
 usage()
 {
-	echo "usage: $(basename "$0") <mount | umount> <path-to-ubi-image> <gen>"
+	echo "usage: $(basename "$0") <mount | umount> <path-to-ubi-image> <gen> <mount-point>"
 }
 
 mount_ubi()
@@ -15,7 +15,7 @@ mount_ubi()
 		sudo modprobe ubi
 		sudo modprobe nandsim first_id_byte=0x20 second_id_byte=0xaa third_id_byte=0x00 fourth_id_byte=0x15
 		sudo chmod 660 /dev/mtd*
-		sudo mkdir /mnt/ubi > /dev/null 2>&1
+		sudo mkdir $MOUNT_POINT > /dev/null 2>&1
 	fi
 
 	sudo dd if=$UBI_IMAGE of=/dev/mtdblock0
@@ -31,13 +31,13 @@ mount_ubi()
 			;;
 	esac
 
-	sudo mount -t ubifs ubi0 /mnt/ubi
-	[ $? -eq 0 ] && echo "Mount successfully on: /mnt/ubi"
+	sudo mount -t ubifs ubi0 $MOUNT_POINT
+	[ $? -eq 0 ] && echo "Mount successfully on: $MOUNT_POINT"
 }
 
 umount_ubi()
 {
-	sudo umount /mnt/ubi/
+	sudo umount $MOUNT_POINT
 	sudo ubidetach -m 0
 
 	# Due to some speical case, kernel moduels have to be rmmod/insmod to make
@@ -56,6 +56,7 @@ umount_ubi()
 
 UBI_IMAGE="$2"
 GEN="$3"
+MOUNT_POINT="${4:-/mnt/ubi}"
 
 case "$1" in
 	"mount")    mount_ubi  ;;
