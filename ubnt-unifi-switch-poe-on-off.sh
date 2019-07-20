@@ -3,6 +3,8 @@
 # Usage:
 #   $ ubnt-unifi-switch-poe-on-off.sh 192.168.1.20 1
 
+SSH_OPTION_IGNORE_CHECK="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+
 CMD=".cmd.txt"
 USR=ubnt
 PWD=ubnt

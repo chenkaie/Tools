@@ -16,11 +16,17 @@ fi
 SSH_OPTION_IGNORE_CHECK="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 
 tmpdir=$(mktemp -d)
+deviceresults="${tmpdir}/ubnt_device_results.json"
 devicelist="${tmpdir}/ubnt_device_list.json"
 
-discover -j | jq . > $devicelist
+# filter out results other than UVC
+echo '{ "devices": ['     >> $deviceresults
+discover -j | grep "UVC." >> $deviceresults
+echo ']}'                 >> $deviceresults
 
-cat $devicelist | jq '.devices[].fwversion' | nl -v 0 | grep "UVC." > "${tmpdir}/uvc_list.json"
+jq . $deviceresults > $devicelist
+
+cat $devicelist | jq '.devices[].fwversion' | nl -v 0 > "${tmpdir}/uvc_list.json"
 
 for i in $(cat "${tmpdir}/uvc_list.json" | awk '{print $1}'); do
 	camip=$(cat $devicelist | jq ".devices[${i}].ipv4" | tr -d '"')
