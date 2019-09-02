@@ -5,6 +5,9 @@ if [ $# -lt 2 ]; then
 	exit 0
 fi
 
+# load credentials if exists
+[ -r ~/.creds ] && . ~/.creds
+
 DEVICE_IP="$1"
 FW_BIN="$2"
 
@@ -32,9 +35,12 @@ case $METHOD in
 			ssh-keygen -t rsa -N "" -f "$KEY"
 		fi
 
-		sshpass -p ${SSH_PASS:-ubnt} ssh-copy-id $SSH_OPTION_IGNORE_CHECK -i "$KEY".pub ${SSH_USER:-ubnt}@"$DEVICE_IP" >/dev/null 2>&1
-		scp $SSH_OPTION_IGNORE_CHECK -i "$KEY" "$FW_BIN" ${SSH_USER:-ubnt}@"$DEVICE_IP":/tmp/fwupdate.bin
-		[ $? -eq 0 ] && ssh -i "$KEY" ${SSH_USER:-ubnt}@"$DEVICE_IP" /usr/bin/fwupdate -m || echo "FW upload fail!"
+		for passwd in ${SSH_PASS:-ubnt}; do
+			sshpass -p ${passwd} ssh-copy-id $SSH_OPTION_IGNORE_CHECK -i "$KEY".pub ${SSH_USER:-ubnt}@"$DEVICE_IP" >/dev/null 2>&1
+			[ $? -eq 0 ] || { echo "try next..."; continue; }
+			scp $SSH_OPTION_IGNORE_CHECK -i "$KEY" "$FW_BIN" ${SSH_USER:-ubnt}@"$DEVICE_IP":/tmp/fwupdate.bin
+			[ $? -eq 0 ] && { ssh -i "$KEY" ${SSH_USER:-ubnt}@"$DEVICE_IP" /usr/bin/fwupdate -m; exit $?; } || echo "FW upload fail!"
+		done
 		;;
 esac
 

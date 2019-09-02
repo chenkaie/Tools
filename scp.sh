@@ -5,8 +5,14 @@ if [ $# -lt 2 ]; then
 	exit 0
 fi
 
+# load credentials if exists
+[ -r ~/.creds ] && . ~/.creds
+
 DEVICE_IP="$1"
 
 SSH_OPTION_IGNORE_CHECK="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 
-sshpass -p ${SSH_PASS:-ubnt} scp -P ${SSH_PORT:-22} $IGNORE_CHECK -r ${@:2} ${SSH_USER:-ubnt}@$DEVICE_IP:/tmp/
+for passwd in ${SSH_PASS:-ubnt}; do
+	sshpass -p ${passwd} scp -P ${SSH_PORT:-22} $SSH_OPTION_IGNORE_CHECK -r "${@:2}" ${SSH_USER:-ubnt}@$DEVICE_IP:/tmp/
+	[ $? -eq 0 ] && { echo "done"; exit 0; } || echo "try next..."
+done
