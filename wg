@@ -39,7 +39,7 @@ function _ag()
 function _wcgrep()
 {
 	case "$0" in
-		*WG*)
+		*WGC*)
 		# [NOTE] Don't ignore case => Lightning fast
 		bGrepExcDir=`$WCGREP_GREP --help | grep "exclude-dir"`
 		if [ -n "$bGrepExcDir" ]; then
