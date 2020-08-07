@@ -19,7 +19,7 @@ DEVICE_IP="$1"
 [ -n "$2" ] && ARGS="$2"
 
 echo "Waiting for device to go online"
-until nc -vzw 2 $DEVICE_IP 22 2>/dev/null; do sleep 2; done
+until nc -vzw 2 $DEVICE_IP 22 2>/dev/null; do sleep 0.3; done
 
 # Put .bashrc for busybox file on remote server
 BASHRC_BB=".bashrc_bb_u"

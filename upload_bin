@@ -13,7 +13,7 @@ FW_BIN="$2"
 
 if [ "$FW_BIN" = "-" ]; then
 	. ubnt-devel-aircam
-	FW_BIN=$(ls "$IMAGEDIR"/*[^bootloader].bin)
+	FW_BIN=$PRODUCTDIR/rel-firmware.bin
 fi
 
 echo Firmware name: "$(basename "$FW_BIN")"

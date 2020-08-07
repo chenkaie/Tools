@@ -4,12 +4,23 @@
 #   $ ubnt-edge-switch-poe-on-off.sh 192.168.1.20 1
 
 USR=ubnt
-PWD=ubnt
+PWD=2rjudoru
 
 IP="$1"
 LANPORT="$2"
 
 echo "===== Disable PoE port: ${LANPORT} at ${IP} ====="
+
+# PoE Port Status
+nc ${IP} 23 >&1 2>&1 << EOF
+${USR}
+${PWD}
+enable
+${PWD}
+configure
+show poe status 0/${LANPORT}
+EOF
+
 # Method 1
 #(echo "${USR}"; echo "${PWD}"; echo "enable"; echo "${PWD}"; echo "configure" ; echo "interface 0/${LANPORT}" ; echo "poe opmode shutdown") | nc ${IP} 23
 

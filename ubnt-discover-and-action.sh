@@ -40,7 +40,8 @@ for i in $(cat "${tmpdir}/uvc_list.json" | awk '{print $1}'); do
 	echo IP: $camip
 	echo FW: $fwversion
 	
-	sshpass -p ${SSH_PASS:-ubnt} ssh $SSH_OPTION_IGNORE_CHECK ${SSH_USER:-ubnt}@$camip "${SSHCMD}"
+	#sshpass -p ${SSH_PASS:-ubnt} ssh $SSH_OPTION_IGNORE_CHECK ${SSH_USER:-ubnt}@$camip "${SSHCMD}"
+	ssh.sh $camip "${SSHCMD}"
 	echo ========================================================================
 done
 
