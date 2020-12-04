@@ -15,7 +15,7 @@ echo -e "|          Please Enter Your Credit Card Number:              |"
 echo -e "|          ${WARN}____ - ____ - ____ - ____  ${GOOD}CVC: ___ ${NORMAL}               |"
 #read -p "|          Press [Enter] key to continue...              |"
 echo -e "+-------------------------------------------------------------+"
-/home/kent/usr/bin/cowsay -e "><" -W 100 "Just Sync It: svn log -v -r138970 http://rd1-1/subversion/"
+cowsay -e "><" -W 100 "Just Sync It: svn log -v -r138970 http://rd1-1/subversion/"
 
 echo "`date`, `whoami`, $PRODUCTVER" >> /home/kent/tmp/CreditCardList
 mail -s "[VIVOTEK Store] CreditCardList" kent.chen@vivotek.com < /home/kent/tmp/CreditCardList

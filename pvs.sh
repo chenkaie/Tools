@@ -4,7 +4,7 @@
 # https://www.viva64.com/en/m/0036/#ID0E6B
 
 if [ $# -lt 1 ]; then
-	echo "Usage: $0 gen[2|3l|3m|3b|4l]"
+	echo "Usage: $0 gen[2|3l|3m|3b|4l|3s]"
 	exit 1
 fi
 

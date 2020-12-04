@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
-# Usage: execute `source ubnt-devel-aircam` under top level folder of aircam-gm
+# Usage: execute `source ubnt-devel-aircam` under top level folder of unifi-video-firmware
 
 git rev-parse --show-toplevel > /dev/null 2>&1
 if [ $? -eq 0 ]; then
-	AIRCAMDIR=$(git rev-parse --show-toplevel)
-	pushd "$AIRCAMDIR" > /dev/null
+	REPODIR=$(git rev-parse --show-toplevel)
+	pushd "$REPODIR" > /dev/null
 else
-	echo "Please run under a aircam-gm git repo!"
+	echo "Please run under a git repo!"
 	exit 1
 fi
 
-export PRODUCTDIR="$AIRCAMDIR"
+export PRODUCTDIR="$REPODIR"
 
 # For Openwrt build system (refer to Openwrt/Makefile)
 # Export below variable, you can make any package w/o typing annyoing long string
@@ -35,24 +35,24 @@ echo Last build: GEN="$GEN" CONF="$CONF"
 export IMAGEDIR=${PRODUCTDIR}/.openwrt/artifacts
 export STAGINGDIR=${PRODUCTDIR}/.openwrt/staging_dir
 export STAGINGBINDIR=${PRODUCTDIR}/.openwrt/staging_dir/host/bin
-export MWDIR=${PRODUCTDIR}/packages-other/ubnt-middleware/unifi-video-fw-middleware/
+export MWDIR=${PRODUCTDIR}/packages/packages-ubnt/ubnt-middleware/unifi-video-fw-middleware/
 
 #export PATH=$STAGINGBINDIR:$PATH
-alias om='PATH=$STAGINGBINDIR:$PATH make'
+alias om='PATH=$STAGINGBINDIR:$PATH make -j$(nproc)'
 alias omc='PATH=$STAGINGBINDIR:$PATH m clean'
 alias omi='PATH=$STAGINGBINDIR:$PATH m install'
 
-# Make symlink                                          # symlink name
+# Make symlink                                                # symlink name
 ln -sf openwrt-"${GEN}"-"${CONF}" .openwrt
-ln -sf .openwrt/artifacts                               rel-artifacts
-ln -sf .openwrt/staging_dir/target-*/root-*/            rootfs-owrt
-ln -sf .openwrt/build_dir/target-*/root-*/              rootfs-ubnt
-ln -sf .openwrt/build_dir/target-*/linux-*/linux-*      linux
-ln -sf .openwrt/build_dir/target-*                      target
-ln -sf .openwrt/staging_dir/target-*/usr*               installDev
+ln -sf .openwrt/artifacts                                     rel-artifacts
+ln -sf .openwrt/staging_dir/target-*/root-*/                  rootfs-owrt
+ln -sf .openwrt/build_dir/target-*/root-*/                    rootfs-ubnt
+ln -sf .openwrt/build_dir/target-*/linux-*/linux-*            linux
+ln -sf .openwrt/build_dir/target-*                            target
+ln -sf .openwrt/staging_dir/target-*/usr*                     installDev
 
-ln -sf .openwrt/artifacts/*bootloader.bin               rel-preload_image.bin
-ln -sf .openwrt/artifacts/*[^bootloader].bin            rel-firmware.bin
+ln -sf .openwrt/artifacts/*bootloader.bin                     rel-preload_image.bin
+ln -sf $(ls .openwrt/artifacts/*[^bootloader].bin | tail -n1) rel-firmware.bin
 
 #godir PATTERN
 
