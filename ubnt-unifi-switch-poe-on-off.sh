@@ -11,6 +11,7 @@ PWD=ubnt
 
 IP="$1"
 LANPORT="$2"
+DELAY="${3:-3}" # Default 3s
 
 echo "===== Disable PoE port: ${LANPORT} at ${IP} ====="
 
@@ -21,8 +22,7 @@ EOF
 # poe off
 sshpass -p $PWD ssh $SSH_OPTION_IGNORE_CHECK -q $USR@$IP $(cat $CMD)
 
-# Sleep for 3000ms
-sleep 3
+sleep $DELAY
 
 echo "===== Enable  PoE port: ${LANPORT} at ${IP} ====="
 

@@ -36,6 +36,9 @@ sudo apt-get install openssh-server vim curl git
 
 # Run a 32-bit program on a 64-bit version of Ubuntu
 sudo apt-get install lib32z1 lib32ncurses5 lib32bz2-1.0 lib32stdc++6
+sudo dpkg --add-architecture i386
+sudo apt-get install libc6:i386 libncurses5:i386 libstdc++6:i386
+sudo apt-get install multiarch-support
 
 # 0. Use passowrd authentication
 sudo sed -i "s/^PasswordAuthentication no/PasswordAuthentication yes/" /etc/ssh/sshd_config

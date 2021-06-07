@@ -84,7 +84,7 @@ mt ()
 dbgtools ()
 {
 	if [ $# -ne 1 ]; then
-		echo "Usage: dbgtools [2|3]"
+		echo "Usage: dbgtools [2|3|4]"
 		return 0
 	fi
 
@@ -92,7 +92,7 @@ dbgtools ()
 	local DBG_DIR=/tmp/dbgtools
 
 	mkdir -p $DBG_DIR
-	for tool in busybox strace gdb lsof tmux .tmux_uart.conf libreadline.so.6 libncurses.so.5 librpc.so; do
+	for tool in busybox strace gdb lsof libreadline.so.6 libncurses.so.5 librpc.so; do
 		wget http://$DEV_SERVER:8888/gen$GEN/$tool -P $DBG_DIR
 		chmod +x $DBG_DIR/$tool
 	done
@@ -149,7 +149,7 @@ runtmux ()
 	fi
 }
 
-help ()
+helpme ()
 {
 	echo "=================================="
 	echo "Functions:"
@@ -174,7 +174,7 @@ cat /etc/board.info |grep board
 echo "=================================="
 echo "Welcome to $IP_HERE, $FROM_ID "
 echo "=================================="
-echo "Usage: help()"
+echo "Usage: helpme()"
 echo "=================================="
 
 #######################
@@ -196,7 +196,7 @@ else
 	PS1=[${MODELNAME}.${FW_VER_SHORT}]'@'${IP_HERE}' # '
 fi
 
-DEV_SERVER="10.2.129.43"
+DEV_SERVER="10.2.2.15"
 alias mount-home="mkdir /home; mount -t nfs -o tcp,nolock $DEV_SERVER:/home /home"
 alias mount-rw="mount -t ubifs -o rw,remount ubi0:rootfs /"
 

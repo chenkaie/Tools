@@ -35,7 +35,7 @@ cscope -bkqR -i cscope.files
 
 echo "ctags ... " $WORK_PATH
 #ctags -R --fields=+lS
-ctags -R --c-kinds=+p --fields=+ialS --extra=+q --exclude=*jquery* -L cscope.files
+ctags -R --c-kinds=+p --fields=+ialS --extras=+q --exclude=*jquery* -L cscope.files
 #ctags -R --c++-kinds=+p+l+x+c+d+e+f+g+m+n+s+t+u+v --fields=+liaS --extra=+q --language-force=c++ --exclude=*jquery*
 
 [ -n "$CSCOPE_TAG_PATH" ] && cp cscope.* tags $CSCOPE_TAG_PATH || echo "Done!"
