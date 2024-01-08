@@ -26,7 +26,8 @@ export INCLUDE_DIR=${TOPDIR}/include
 #export PKG_JOBS="-j$(grep processor /proc/cpuinfo | wc -l)"
 
 # Fetch $GEN=[genXF] and $CONF=[rel|dbg], read from last built
-MAKE_TARGET=$(ls -t .marker-*_prepare | head -n1)
+#MAKE_TARGET=$(ls -t .marker-*_prepare | head -n1)
+MAKE_TARGET=$(ls -td openwrt-gen* | head -n1)
 export GEN=$(echo "$MAKE_TARGET" | cut -d '_' -f 1 | cut -d '-' -f 2)
 export CONF=$(echo "$MAKE_TARGET" | cut -d '_' -f 1 | cut -d '-' -f 3)
 echo Last build: GEN="$GEN" CONF="$CONF"

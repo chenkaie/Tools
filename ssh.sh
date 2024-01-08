@@ -36,6 +36,7 @@ spawn sshpass -p $passwd ssh $SSH_OPTION_IGNORE_CHECK ${SSH_USER:-ubnt}@$DEVICE_
 send \"FROM_ID='`whoami`'\r\"
 send \"source /tmp/$BASHRC_BB\r\"
 
+send \"date\r\"
 send \"$ARGS\r\"
 
 interact timeout 60 { }

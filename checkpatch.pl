@@ -1,0 +1,1 @@
+/home/kent/project/linux-5.4.61/scripts/checkpatch.pl

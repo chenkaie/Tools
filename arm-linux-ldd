@@ -1,7 +1,7 @@
 #!/bin/sh
 # Method1:
 #/opt/toolchain/arm-elf-4.5.2/bin/arm-elf-readelf -d $1 |grep "Shared library"
-/media/kent/SSD/ubnt_cache_dir/toolchains/7/linaro-aarch64-2017.02-gcc6.3/bin/aarch64-linux-gnu-readelf -d $1 |grep "Shared library"
+~/ubnt_cache_dir/toolchains/14/linaro-aarch64-2017.02-gcc6.3/bin/aarch64-linux-gnu-readelf -d $1 |grep "Shared library"
 # Method2:
 #/opt/toolchain/arm-elf-4.5.2/bin/arm-elf-objdump -x $1 | grep "NEEDED"
-/media/kent/SSD/ubnt_cache_dir/toolchains/7/linaro-aarch64-2017.02-gcc6.3/bin/aarch64-linux-gnu-objdump -x $1 | grep "NEEDED"
+~/ubnt_cache_dir/toolchains/14/linaro-aarch64-2017.02-gcc6.3/bin/aarch64-linux-gnu-objdump -x $1 | grep "NEEDED"
