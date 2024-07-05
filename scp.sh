@@ -13,6 +13,6 @@ DEVICE_IP="$1"
 SSH_OPTION_IGNORE_CHECK="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 
 for passwd in ${SSH_PASS:-ubnt}; do
-	sshpass -p ${passwd} scp -P ${SSH_PORT:-22} $SSH_OPTION_IGNORE_CHECK -r "${@:2}" ${SSH_USER:-ubnt}@$DEVICE_IP:/tmp/
+	sshpass -p ${passwd} scp -O -P ${SSH_PORT:-22} $SSH_OPTION_IGNORE_CHECK -r "${@:2}" ${SSH_USER:-ubnt}@$DEVICE_IP:/tmp/
 	[ $? -eq 0 ] && { echo "done"; exit 0; } || echo "try next..."
 done
