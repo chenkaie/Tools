@@ -25,7 +25,7 @@ until nc -vzw 2 $DEVICE_IP 22 2>/dev/null; do sleep 0.3; done
 BASHRC_BB=".bashrc_bb_u"
 SSH_OPTION_IGNORE_CHECK="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
 for passwd in ${SSH_PASS:-ubnt}; do
-	sshpass -p ${passwd} scp $SSH_OPTION_IGNORE_CHECK `dirname $0`/$BASHRC_BB ${SSH_USER:-ubnt}@$DEVICE_IP:/tmp/
+	sshpass -p ${passwd} scp -O $SSH_OPTION_IGNORE_CHECK `dirname $0`/$BASHRC_BB ${SSH_USER:-ubnt}@$DEVICE_IP:/tmp/
 	[ $? -eq 0 ] && break || echo "try next..."
 done
 
