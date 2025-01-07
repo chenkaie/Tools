@@ -19,20 +19,26 @@ fi
 pattern="$1"
 INDEX=$2
 
+case `uname` in
+	Darwin|*BSD)
+		_strings='strings'
+		;;
+	*)
+		_strings='strings -e S'
+		;;
+esac
+
 function exist () { type "$1" &> /dev/null; }
 
 function _ag()
 {
-	case `uname` in
-		Darwin|*BSD)
-			_strings='strings'
-			;;
-		*)
-			_strings='strings -e S'
-			;;
-	esac
-
 	ag --smart-case --nocolor --nogroup --skip-vcs-ignores --hidden "$pattern" | $_strings | sort | nl -n ln | grep -P -Ii --colour=auto "$pattern"
+	return 0;
+}
+
+function _rg()
+{
+	rg --line-number --smart-case --no-heading --hidden "$pattern" | $_strings | sort | nl -n ln | grep -P -Ii --colour=auto "$pattern"
 	return 0;
 }
 
@@ -61,7 +67,13 @@ function _wcgrep()
 }
 
 if [ -n "$INDEX" ]; then
-	exist ag && result=$(_ag) || result=$(_wcgrep)
+	if exist rg; then
+		result=$(_rg)
+	elif exist ag; then
+		result=$(_ag)
+	else
+		result=$(_wcgrep);
+	fi
 
 	if [ "$INDEX" == "a" ]; then
 		#FIXME: Why "tr" executed before "cut" in this statement FILENAME=`echo $result | cut -d ":" -f 1 | tr '\n' '@' | sed 's/@/ /g'
@@ -77,6 +89,12 @@ if [ -n "$INDEX" ]; then
 		$EDITOR $FILENAME -c "silent! /$pattern" +$LINENUMBER
 	fi
 else
-	exist ag && _ag || _wcgrep
+	if exist rg; then
+		_rg
+	elif exist ag; then
+		_ag
+	else
+		_wcgrep
+	fi
 fi
 
