@@ -1,0 +1,1 @@
+/home/kent/Project/Issues/RecipePacakgeLookup/bitbake-recipe-lookup.py

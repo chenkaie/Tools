@@ -5,7 +5,7 @@
 ###########
 
 # Setup some variables needed for bootstrapping the environment
-ROOT=$HOME/project
+ROOT=$HOME/Project
 
 ##########
 # S:Main #

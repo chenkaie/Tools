@@ -38,7 +38,7 @@ function _ag()
 
 function _rg()
 {
-	rg --line-number --smart-case --no-heading --hidden "$pattern" | $_strings | sort | nl -n ln | grep -P -Ii --colour=auto "$pattern"
+	rg --line-number --smart-case --no-heading --hidden --no-ignore-vcs -g '!.git/' "$pattern" | $_strings | sort | nl -n ln | grep -P -Ii --colour=auto "$pattern"
 	return 0;
 }
 

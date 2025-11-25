@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/bin/bash
+
+#set -x
 
 # If you fully UNDERSTAND what you are doing, it won't be annoying anymore
 #
@@ -22,21 +24,24 @@ echo "Waiting for device to go online"
 until nc -vzw 2 $DEVICE_IP 22 2>/dev/null; do sleep 0.3; done
 
 # Put .bashrc for busybox file on remote server
-BASHRC_BB=".bashrc_bb_u"
+BASHRC_BB=".bashrc_bb_v"
 SSH_OPTION_IGNORE_CHECK="-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
-for passwd in ${SSH_PASS:-ubnt}; do
-	sshpass -p ${passwd} scp -O $SSH_OPTION_IGNORE_CHECK `dirname $0`/$BASHRC_BB ${SSH_USER:-ubnt}@$DEVICE_IP:/tmp/
+for passwd in ${SSH_PASS:-root}; do
+	sshpass -p ${passwd} scp -O $SSH_OPTION_IGNORE_CHECK `dirname $0`/$BASHRC_BB `dirname $0`/.tmux_uart.conf ${SSH_USER:-root}@[$DEVICE_IP]:/tmp/
 	[ $? -eq 0 ] && break || echo "try next..."
 done
 
 expect -c "
 set timeout 3
-spawn sshpass -p $passwd ssh $SSH_OPTION_IGNORE_CHECK ${SSH_USER:-ubnt}@$DEVICE_IP
+spawn sshpass -p $passwd ssh $SSH_OPTION_IGNORE_CHECK ${SSH_USER:-root}@$DEVICE_IP
 
 send \"FROM_ID='`whoami`'\r\"
 send \"source /tmp/$BASHRC_BB\r\"
 
-send \"date\r\"
+send \"export PATH=\\\$PATH:/mnt/media/usr/bin:/usr/libexec\r\"
+send \"cat /mnt/persistent/calib/vivint.ini\r\"
+send \"cat /etc/version\r\"
+send \"tmux ls #HINT: tmux attach-session\r\"
 send \"$ARGS\r\"
 
 interact timeout 60 { }
